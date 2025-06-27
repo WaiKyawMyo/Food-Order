@@ -17,6 +17,8 @@ import StaffRegister from "./pages/StaffRegister/StaffRegister";
 import StaffCheck from "./pages/StaffCheck";
 import CreateTable from "./pages/TablesCreate/CreateTable";
 import CheckSignin from "./components/auth/CheckSignin";
+import Menu from "./pages/Menu/Menu";
+import Set_menu from "./pages/Menu/Set_menu";
 
 export function ClearLocalStorageOnClose() {
   useEffect(() => {
@@ -51,6 +53,10 @@ export default function App() {
             
             <Route path="/staffRegister" element={<Product><StaffCheck><StaffRegister /></StaffCheck></Product>} />
             <Route path="/add-table" element={<Product><CreateTable/></Product>} />
+
+             <Route path="/menu" element={<Menu/>} />
+             <Route path="/set-menu" element={< Set_menu />} />
+
             {/* Forms */}
             <Route path="/form-elements" element={<FormElements />} />
 

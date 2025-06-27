@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { useSelector } from "react-redux"
 import { RootState } from "../store"
-import { Link, useNavigate } from "react-router"
+import {  useNavigate } from "react-router"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faXmark } from "@fortawesome/free-solid-svg-icons"
 

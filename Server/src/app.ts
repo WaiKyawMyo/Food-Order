@@ -6,6 +6,7 @@ import cors from 'cors'
 import cookieParser from "cookie-parser"
 import { errorHandler } from "./middleware/errorhandler"
 import TableRouter from './router/table'
+import Food from './router/food'
 
 
 dotenv.config({
@@ -22,6 +23,7 @@ app.use(cookieParser())
 
 app.use('/api',AdminRouter)
 app.use('/api',TableRouter)
+app.use('/api',Food)
 app.use(errorHandler)
 
 app.listen(PORT,()=>{

@@ -34,7 +34,13 @@ interface Iupdate extends IDelete {
     table_No: number
     capacity:number,
 }
-
+interface IMenu {
+    name:string,
+    type:string ,
+    price:number,
+    is_avaliable: boolean ,
+    image:FileList
+}
 export const AdminApiSlice = api.injectEndpoints({
     endpoints:(build)=>({
         Login:build.mutation({
@@ -123,8 +129,15 @@ export const AdminApiSlice = api.injectEndpoints({
                 method:"put",
                 body:data
             })
+        }),
+        createMenu:build.mutation({
+            query:(data:IMenu)=>({
+                url:'menu-create',
+                method:'post',
+                body:data
+            })
         })
     }),
     
 })
-export const{useUpdateAdminMutation,useGetAllAdminMutation,useDeleteAdminMutation, useLoginMutation,useLogoutMutation,useUpdateSchemaMutation,useGetAllTableMutation,useAdminProfileMutation,useRegisterStaffMutation,useCreteateTableMutation,useDeleteTableMutation ,useUpdateTabelMutation}=AdminApiSlice
+export const{useCreateMenuMutation ,useUpdateAdminMutation,useGetAllAdminMutation,useDeleteAdminMutation, useLoginMutation,useLogoutMutation,useUpdateSchemaMutation,useGetAllTableMutation,useAdminProfileMutation,useRegisterStaffMutation,useCreteateTableMutation,useDeleteTableMutation ,useUpdateTabelMutation}=AdminApiSlice

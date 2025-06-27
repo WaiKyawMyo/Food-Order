@@ -16,7 +16,7 @@ import {
 import { useSidebar } from "../context/SidebarContext";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
+import { faCirclePlus, faUtensils } from "@fortawesome/free-solid-svg-icons";
 
 
 type NavItem = {
@@ -41,6 +41,13 @@ const navItems: NavItem[] = [
     icon: <UserCircleIcon />,
     name: "Add Staff",
     path: "/staffRegister",
+  },
+  {
+    name: "Menu",
+    icon: <FontAwesomeIcon icon={faUtensils} />,
+    subItems: [{ name: "Menu", path: "/menu", pro: false },
+      { name: "Set Menu", path: "/set-menu", pro: false }
+    ],
   },
   {
     name: "Forms",

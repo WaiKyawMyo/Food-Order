@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const foodSchema = new Schema ({
     name:{
@@ -22,3 +22,5 @@ const foodSchema = new Schema ({
         required:true
     }
 })
+
+export const Menu= mongoose.model('Menu',foodSchema)
