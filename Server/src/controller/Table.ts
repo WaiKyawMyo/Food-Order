@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { Table } from "../model/tabel";
 import { AuthRequest } from "../middleware/authMiddleware";
+import { existsSync } from "fs";
 
 export const addTable = asyncHandler(async (req: AuthRequest, res: Response) => {
     const { table_No, capacity, is_reserved, status } = req.body
@@ -53,7 +54,7 @@ export const deletTable = asyncHandler(async (req: Request, res: Response) => {
 })
 
 export const updateTable = asyncHandler(async (req: Request, res: Response) => {
-    const { _id, table_No, capacity } = req.body
+    const { _id, table_No, capacity,status } = req.body
     const exitTable = await Table.findById({ _id })
     const TableNoCheck = await Table.findOne({ table_No })
     if (!_id) {
@@ -67,6 +68,7 @@ export const updateTable = asyncHandler(async (req: Request, res: Response) => {
 
     exitTable.table_No = table_No,
         exitTable.capacity = capacity
+    exitTable.status = status
 
     if (TableNoCheck) {
         if (TableNoCheck._id == _id) {

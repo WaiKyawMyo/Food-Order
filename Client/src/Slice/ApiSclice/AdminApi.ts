@@ -34,13 +34,7 @@ interface Iupdate extends IDelete {
     table_No: number
     capacity:number,
 }
-interface IMenu {
-    name:string,
-    type:string ,
-    price:number,
-    is_avaliable: boolean ,
-    image:FileList
-}
+
 export const AdminApiSlice = api.injectEndpoints({
     endpoints:(build)=>({
         Login:build.mutation({
@@ -131,7 +125,7 @@ export const AdminApiSlice = api.injectEndpoints({
             })
         }),
         createMenu:build.mutation({
-            query:(data:IMenu)=>({
+            query:(data)=>({
                 url:'menu-create',
                 method:'post',
                 body:data

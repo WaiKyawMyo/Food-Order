@@ -3,6 +3,7 @@ import { z } from "zod/v4";
 export const LoginSchema = z.object({
    name: z.string().min(1, "Name required"),
   type: z.string().min(1, "Type required"),
+  is_avaliable: z.boolean(),
   price: z.number().positive("Price must be positive"),
     
     image: z.custom<FileList>((files) => files instanceof FileList && files.length > 0, {

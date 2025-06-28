@@ -2,13 +2,14 @@ import { Request, Response } from 'express';
 import fs from 'fs/promises';
 import cloudinary from '../utils/cloudinary';
 import { Menu } from '../model/food';
+import { asyncHandler } from '../utils/asyncHandler';
 
 
-export const CreateMenu = async (req: Request, res: Response) => {
+export const CreateMenu = asyncHandler(async (req: Request, res: Response) => {
   const filePath = req.file?.path;
   const {name,type,price,is_avaliable}=req.body
   if (!filePath) {
-     res.status(400).json({ error: 'No file uploaded' });
+     res.status(400).json({ message: 'No file uploaded' });
      return
   }
 
@@ -19,7 +20,7 @@ export const CreateMenu = async (req: Request, res: Response) => {
     });
 
     // Save the URL to MongoDB
-    const menu = new Menu({
+    const menu = await Menu.create({
       name,
       type,
       price,
@@ -31,13 +32,17 @@ export const CreateMenu = async (req: Request, res: Response) => {
     await fs.unlink(filePath);
 
      res.status(200).json({
-      menu,
-      message: 'File uploaded and database record created!'
+      ...menu,
+      message: 'Success Menu Create'
     });
 
   } catch (error) {
     // Attempt to clean up
     try { await fs.unlink(filePath); } catch {}
-   res.status(500).json({ error: 'Upload failed', details: error });
+   res.status(500).json({ message: 'Fail Create', details: error });
   }
-};
+})
+
+export const getAllMenu = asyncHandler(async(req:Request,res:Response)=>{
+  const getAll = await Menu.find()
+})

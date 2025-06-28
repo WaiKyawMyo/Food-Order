@@ -6,7 +6,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import { useState } from "react";
-import { toast } from "react-toastify";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 
 type Input = z.infer<typeof LoginSchema>;
 function Menu() {
@@ -19,20 +19,26 @@ function Menu() {
     formState: { errors, isSubmitting },
   } = useForm<Input>({
     resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      is_avaliable: true,
+      
+    },
   });
   const submit: SubmitHandler<Input> = async (data) => {
   try {
-      const res = await crestetable({
-      name: data.name,
-      type: data.type,
-      price: data.price,
-      is_avaliable: true,
-      image: data.image,
-    });
+    const formData = new FormData()
+     formData.append("name", data.name);
+    formData.append("type", data.type);
+    formData.append("price", data.price.toString());
+    formData.append("is_avaliable", String(data.is_avaliable));
+    formData.append("image", data.image[0]);
+
+   
+      const res = await crestetable(formData);
     console.log(res)
     if (res.error) {
       toast.error(res.error.data.message);
-
+      
     } else {
       toast.success(res.data.message);
       reset()
@@ -43,6 +49,20 @@ function Menu() {
   };
   return (
     <>
+     <ToastContainer
+             className={'mt-14'}
+            position="top-right"
+            autoClose={2000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+            />
       <PageBreadcrumb pageTitle="Create Menu" />
       <ComponentCard title="Create Menu">
         <form

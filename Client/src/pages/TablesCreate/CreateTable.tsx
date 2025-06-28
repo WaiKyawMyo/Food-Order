@@ -3,7 +3,7 @@ import { tableSchema } from "../../schema/table";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ComponentCard from "../../components/common/ComponentCard";
-import { toast } from "react-toastify";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 import {
   useCreteateTableMutation,
   useDeleteTableMutation,
@@ -103,6 +103,20 @@ function CreateTable() {
     <>
     <PageBreadcrumb pageTitle="Create Table" />
       <ComponentCard title="Create Table">
+        <ToastContainer
+         className={'mt-14'}
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+        />
         <form
           onSubmit={handleSubmit(submit)}
           className="max-w-md mx-auto text-gray-500 dark:text-white p-6"
