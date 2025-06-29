@@ -1,17 +1,38 @@
 import { z } from "zod/v4";
 import { LoginSchema } from "../../schema/menu";
-import { useCreateMenuMutation } from "../../Slice/ApiSclice/AdminApi";
+import {
+  useCreateMenuMutation,
+  useDeleteMenuMutation,
+  useUpdateMenuMutation,
+} from "../../Slice/ApiSclice/AdminApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bounce, toast, ToastContainer } from "react-toastify";
+import ShowMenu from "./ShowMenu";
 
 type Input = z.infer<typeof LoginSchema>;
+type inputupdate = {
+  name: string;
+  type: string;
+  price: number;
+  is_avaliable: boolean;
+  _id: string;
+};
+
+
+
 function Menu() {
   const [crestetable, { isLoading }] = useCreateMenuMutation();
   const [update, setUpdate] = useState(false);
+
+  const [updatetable] = useUpdateMenuMutation();
+
+  const [editData, setEditData] = useState<inputupdate | null>(null);
+  const [deleteTB] = useDeleteMenuMutation();
+
   const {
     register,
     handleSubmit,
@@ -21,48 +42,107 @@ function Menu() {
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       is_avaliable: true,
-      
     },
   });
-  const submit: SubmitHandler<Input> = async (data) => {
-  try {
-    const formData = new FormData()
-     formData.append("name", data.name);
-    formData.append("type", data.type);
-    formData.append("price", data.price.toString());
-    formData.append("is_avaliable", String(data.is_avaliable));
-    formData.append("image", data.image[0]);
+  const updateStart = (
+    name: string,
+    type: string,
+    is_avaliable: boolean,
+    price: number,
+    _id: string
+  ) => {
+    setEditData({ _id, price, is_avaliable, type, name });
 
-   
-      const res = await crestetable(formData);
-    console.log(res)
-    if (res.error) {
-      toast.error(res.error.data.message);
-      
-    } else {
-      toast.success(res.data.message);
-      reset()
-    }
-  } catch (err:any) {
-    toast.error(err.data.message|| err.message)
-  }
+    setUpdate(true);
+    toast.info(`Update Menu: ${name}`);
   };
+
+  const delteBtn = async (_id: string) => {
+    try {
+      const res = await deleteTB({ _id: _id });
+
+      if (res.error) {
+        toast.error(res.error.data.message);
+      } else {
+        toast.success("Success Delete");
+        setEditData(null);
+        setUpdate(false);
+        reset();
+      }
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const submit: SubmitHandler<Input> = async (data) => {
+    try {
+      if (update) {
+        const formData = new FormData();
+
+        formData.append("name", data.name);
+        formData.append("type", data.type);
+        formData.append("price", data.price.toString());
+        formData.append("is_avaliable", String(data.is_avaliable));
+        formData.append("image", data.image[0]);
+        if (data.image && data.image.length > 0) {
+          formData.append("image", data.image[0]);
+        }
+        const res = await updatetable({ _id: editData?._id, formData });
+        if (res.error) {
+          toast.error(res.error.data.message);
+        } else {
+          toast.success(res.data.message);
+          reset();
+        }
+      } else {
+        const formData = new FormData();
+        formData.append("name", data.name);
+        formData.append("type", data.type);
+        formData.append("price", data.price.toString());
+        formData.append("is_avaliable", String(data.is_avaliable));
+        formData.append("image", data.image[0]);
+
+        const res = await crestetable(formData);
+        console.log(res);
+        if (res.error) {
+          toast.error(res.error.data.message);
+        } else {
+          toast.success(res.data.message);
+          reset();
+        }
+      }
+    } catch (err: any) {
+      toast.error(err.data.message || err.message);
+    }
+  };
+  useEffect(() => {
+    if (editData) {
+      reset({
+        name: editData.name,
+        type: editData.type,
+        price: editData.price,
+        is_avaliable: editData.is_avaliable,
+      });
+    } else {
+      reset();
+    }
+  }, [reset, editData]);
   return (
     <>
-     <ToastContainer
-             className={'mt-14'}
-            position="top-right"
-            autoClose={2000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick={false}
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-            transition={Bounce}
-            />
+      <ToastContainer
+        className={"mt-14"}
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
       <PageBreadcrumb pageTitle="Create Menu" />
       <ComponentCard title="Create Menu">
         <form
@@ -153,6 +233,8 @@ function Menu() {
           </button>
         </form>
       </ComponentCard>
+
+      <ShowMenu  updateStart={updateStart} delteBtn={delteBtn}/>
     </>
   );
 }

@@ -131,12 +131,8 @@ export const deletAdmin = asyncHandler(async (req: Request, res: Response) => {
         throw new Error('Table not found.')
     }
 
-    if (!data) {
-        res.status(404)
-        throw new Error('Table not found')
-    }
     await Admin.findByIdAndDelete(_id)
-    res.status(200).json({ message: "Table deleted successfully" })
+    res.status(200).json({ message: "Admin deleted successfully" })
 })
 export const updateAdmin = asyncHandler(async (req: Request, res: Response) => {
     const { _id, username, email,password } = req.body
