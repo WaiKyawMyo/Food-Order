@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import ShowMenu from "./ShowMenu";
 
+
 type Input = z.infer<typeof LoginSchema>;
 type inputupdate = {
   name: string;
@@ -38,6 +39,7 @@ function Menu() {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
+   
   } = useForm<Input>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -84,10 +86,14 @@ function Menu() {
         formData.append("price", data.price.toString());
         formData.append("is_avaliable", String(data.is_avaliable));
         formData.append("image", data.image[0]);
+        if (editData?._id) {
+  formData.append("_id", editData._id);
+}
         if (data.image && data.image.length > 0) {
           formData.append("image", data.image[0]);
         }
-        const res = await updatetable({ _id: editData?._id, formData });
+        const res = await updatetable(  formData);
+        console.log(res)
         if (res.error) {
           toast.error(res.error.data.message);
         } else {
@@ -167,6 +173,8 @@ function Menu() {
               <></>
             )}
           </div>
+
+ 
           <div className="relative z-0 w-full mb-5 group">
             <input
               {...register("price", { valueAsNumber: true })}
@@ -201,7 +209,11 @@ function Menu() {
               <></>
             )}
           </div>
-          <div className="py-3">
+
+            
+
+          
+         {!update&& <div className="py-3">
             <label
               htmlFor="images"
               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -216,7 +228,7 @@ function Menu() {
             {errors.image && (
               <p className="text-red-500">{errors.image.message as string}</p>
             )}
-          </div>
+          </div>}
 
           <button
             disabled={isSubmitting}

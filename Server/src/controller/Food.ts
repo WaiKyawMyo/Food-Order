@@ -64,40 +64,30 @@ export const deleteMenu = asyncHandler(async (req: Request, res: Response) => {
     res.status(200).json({ message: "Menu deleted successfully" })
 })
 
-
 export const updateMenu = asyncHandler(async (req: Request, res: Response) => {
-  
-  const { name, type, price, is_avaliable,_id } = req.body;
+  const { name, type, price, is_avaliable, _id } = req.body;
 
-  const menu = await Menu.findById(id);
-  if (!menu){
-    res.status(404).json({ message: "Menu not found" });
-  } else{
-     // If a new image is uploaded
-  if (req.file?.path) {
-    // Optional: Delete old image from Cloudinary if you stored public_id
-    if (menu?.cloudinary_id) {
-      await cloudinary.uploader.destroy(menu.cloudinary_id);
-    }
-    // Upload new image
-    const result = await cloudinary.uploader.upload(req.file.path, { resource_type: "auto" });
-    menu.image = result.secure_url;
-    menu.cloudinary_id = result.public_id;
+  // Defensive: Check required fields
+  if (!name || !type || !price || is_avaliable === undefined || !_id) {
+     res.status(400).json({ message: "All fields are required" });
   }
 
-  // Update other fields
-  menu.name = name;
-  menu.type = type;
-  menu.price = price;
-  menu.is_avaliable = is_avaliable;
+  const menu = await Menu.findById(_id);
+  if (!menu) {
+     res.status(404).json({ message: "Menu not found" });
+  } else {
+    // Parse values for proper types
+    menu.name = name;
+    menu.type = type;
+    menu.price = Number(price);
+    menu.is_avaliable =
+      is_avaliable === true ||
+      is_avaliable === "true" ||
+      is_avaliable === 1 ||
+      is_avaliable === "1";
 
-  await menu.save();
+    await menu.save();
 
-  // Cleanup local file if uploaded
-  if (req.file?.path) await fs.unlink(req.file.path);
-
-  res.status(200).json({ menu, message: "Menu updated!" });
+     res.status(200).json({ menu, message: "Menu updated!" });
   }
-
- 
 });

@@ -6,12 +6,8 @@ import { faAngleLeft, faAngleRight, faPen, faTrash, faTriangleExclamation } from
 
 
 type Prop = {
-  updateStart:(name: string,
-    type: string,
-    is_avaliable: boolean,
-    price: number,
-    _id: string)=>void
-  delteBtn:(val:string)=>void
+  updateStart: (name: string, type: string, is_avaliable: boolean, price: number, _id: string) => void
+  delteBtn: (val: string) => void  // Fixed spelling here
 }
 type Itable = {
   _id:string,
@@ -30,9 +26,10 @@ function ShowMenu({updateStart,delteBtn}:Prop) {
     const [tableData, setTabelData] = useState<Itable[]>([])
       const rowPerPage =10
       const [currentPage,setCurrentPage]= useState(1)
-      
+     const [menuId,setMenuId]= useState('')
       const [ConformPop,SetConfirmPop]=useState(false)
       const totalPage = Math.ceil(tableData.length/rowPerPage)
+      const [Name,SetName]=useState('')
 
       
   const handleClick = (page:number)=>{
@@ -55,9 +52,15 @@ function ShowMenu({updateStart,delteBtn}:Prop) {
     
   }
   const DeleteTable=()=>{
-    SetConfirmPop(false)
-    delteBtn(tableID)
-  }
+        SetConfirmPop(false)
+        delteBtn(menuId)
+      }
+      const confirm=(Id:string ,name:string)=>{
+         SetName(name)
+         SetConfirmPop(true)
+         setMenuId(Id)
+      }
+  
   useEffect(() => {
       const data = async () => {
         const res = await getAll({})
@@ -88,7 +91,7 @@ function ShowMenu({updateStart,delteBtn}:Prop) {
               {pageData.length ? pageData.map((data,index) => {
                 return <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
                   <td scope="row" className="px-6 py-4 text-center">
-                     <img src={data.image} alt="" />
+                     <img className="w-20" src={data.image} alt="" />
                   </td>
                   <td className="px-6 py-4 text-center">
                     {data.name}
@@ -99,9 +102,7 @@ function ShowMenu({updateStart,delteBtn}:Prop) {
                   <td className="px-6 py-4 text-center">
                     {data.type}
                   </td>
-                  <td className="px-6 py-4 text-center">
-                    {data.price}
-                  </td>
+                
                   <td className="px-6 py-2 ">
 
                     {data.is_avaliable  ? <div className="border-2 border-green-600 rounded-2xl text-center w-23 bg-green-200 dark:text-white dark:bg-green-950 mx-auto p-1">
@@ -112,9 +113,20 @@ function ShowMenu({updateStart,delteBtn}:Prop) {
                   </td>
                   <td className="px-6 py-2 text-center">
                     <div className="flex gap-2 items-center justify-center ">
-                      <FontAwesomeIcon icon={faPen} onClick={()=>updateStart()} className="cursor-pointer hover:text-blue-500"/>
+                   <FontAwesomeIcon
+  icon={faPen}
+  
+  onClick={() => updateStart(
+  data.name,
+  data.type,
+  data.is_avaliable,
+  data.price,
+  data._id
+)}
+  className="cursor-pointer hover:text-blue-500"
+/>
                       <div className="w-1 rounded-md h-6 bg-gray-600 dark:bg-gray-200"></div>
-                      <FontAwesomeIcon icon={faTrash} onClick={()=>confirm(data._id)} className="cursor-pointer hover:text-red-500"/>
+                      <FontAwesomeIcon icon={faTrash} onClick={()=>confirm(data._id ,data.name)} className="cursor-pointer hover:text-red-500"/>
                       
                     </div>
                   </td>
@@ -129,7 +141,7 @@ function ShowMenu({updateStart,delteBtn}:Prop) {
                < FontAwesomeIcon className="text-yellow-500 text-2xl" icon={faTriangleExclamation} /> 
               <h1 className="ml-3 text-2xl font-bold">Delete Table</h1>
             </div>
-            <p className="my-2 pb-2.5">   Are you sure you want to delete Table No {}</p>
+            <p className="my-2 pb-2.5">   Are you sure you want to delete {Name}</p>
              <div className="flex gap-x-3">
                 <button onClick={close} className="w-1/2 bg-white text-black rounded p-1 hover:bg-gray-200">Cancel</button>
                 <button onClick={DeleteTable} className="w-1/2 bg-red-500 text-white rounded p-1 hover:bg-red-400">Delete</button>

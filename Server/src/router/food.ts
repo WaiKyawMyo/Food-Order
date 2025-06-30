@@ -6,6 +6,6 @@ import { CreateMenu, deleteMenu, getAllMenu, updateMenu } from "../controller/Fo
 const router = Router()
 
 router.post('/menu-create', upload.single('image'),CreateMenu);
-router.route('/get-menu').get(getAllMenu).delete(deleteMenu).put(upload.single('image'),updateMenu)
+router.route('/get-menu').get(getAllMenu).delete(deleteMenu).put(updateMenu)
 
 export default router
