@@ -1,128 +1,83 @@
 import { z } from "zod/v4";
-import { LoginSchema } from "../../schema/menu";
-import {
-  useCreateMenuMutation,
-  useDeleteMenuMutation,
-  
-} from "../../Slice/ApiSclice/AdminApi";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { UpdateMenuSchema } from "../../schema/UpdateMenu";
 import { SubmitHandler, useForm } from "react-hook-form";
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import ComponentCard from "../../components/common/ComponentCard";
-import {  useState } from "react";
-import { Bounce, toast, ToastContainer } from "react-toastify";
-import ShowMenu from "./ShowMenu";
-import UpdateForm from "./UpdateForm";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { useUpdateMenuMutation } from "../../Slice/ApiSclice/AdminApi";
+import { toast } from "react-toastify";
 
 
-
-type Input = z.infer<typeof LoginSchema >;
-type inputupdate = {
+type Input = z.infer<typeof UpdateMenuSchema >;
+type EditData = {
   name: string;
   type: string;
   price: number;
   is_avaliable: boolean;
-  _id: string;
+  _id: string; 
   
-};
+} | null
+type prop ={
+    editData: EditData
+}
 
+function UpdateForm({editData}:prop) {
 
+    const [updateData,{isLoading}]=useUpdateMenuMutation()
+     const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors, isSubmitting },
+       
+      } = useForm<Input>({
+        resolver: zodResolver(UpdateMenuSchema),
+defaultValues: {
+    // other fields...
+    is_avaliable: "true",  // or "false" as your default
+  },
+      });
 
-function Menu() {
-  const [crestetable, { isLoading }] = useCreateMenuMutation();
-  const [update, setUpdate] = useState(false);
-
-
-
-  const [editData, setEditData] = useState<inputupdate | null>(null);
-  const [deleteTB] = useDeleteMenuMutation();
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-   
-  } = useForm<Input>({
-    resolver: zodResolver(LoginSchema),
-    defaultValues: {
-      is_avaliable: true,
-    },
-  });
-  const updateStart = (
-    name: string,
-    type: string,
-    is_avaliable: boolean,
-    price: number,
-    _id: string
-  ) => {
-    setEditData({ _id, price, is_avaliable, type, name });
-
-    setUpdate(true);
-    toast.info(`Update Menu: ${name}`);
-  };
-
-  const delteBtn = async (_id: string) => {
-    try {
-      const res = await deleteTB({ _id: _id });
-
-      if (res.error) {
-        toast.error(res.error.data.message);
-      } else {
-        toast.success("Success Delete");
-        setEditData(null);
-        setUpdate(false);
-        reset();
-      }
-    } catch (err: any) {
-      toast.error(err.message);
+      useEffect(() => {
+    if (editData) {
+      reset({
+        name: editData.name,
+        type: editData.type,
+        price: editData.price,
+        is_avaliable: editData.is_avaliable === true ? "true" : "false"
+      });
+    } else {
+      reset();
     }
-  };
-
-  const submit: SubmitHandler<Input> = async (data) => {
-    try {
-      
- 
-        const formData = new FormData();
-        formData.append("name", data.name);
+  }, [reset, editData]);
+     const submit: SubmitHandler<Input> = async (data) => {
+       try{
+         const formData = new FormData();
+            formData.append("name", data.name);
         formData.append("type", data.type);
         formData.append("price", data.price.toString());
-        formData.append("is_avaliable", String(data.is_avaliable));
-        formData.append("image", data.image[0]);
-
-        const res = await crestetable(formData);
-        console.log(res);
-        if (res.error) {
-          toast.error(res.error.data.message);
-        } else {
-          toast.success(res.data.message);
-          reset();
+        formData.append("is_avaliable", data.is_avaliable === "true" ? "true" : "false")
+        if(editData?._id){
+          formData.append("_id", editData._id);
         }
-      
-    } catch (err: any) {
-      toast.error(err.data.message || err.message);
-    }
-  };
+        
+        if(data.image){
+            formData.append("image", data.image[0]);
+        }
+        
+        
 
+            const res= await updateData(formData)
+            console.log(res)
+            if(res.error){
+                toast.error(res.data.error.message);
+                
+            }
+       }catch(err:any){
+        toast.error(err.data.message)
+       }
+     }
   return (
-    <>
-      <ToastContainer
-        className={"mt-14"}
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick={false}
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-        transition={Bounce}
-      />
-      <PageBreadcrumb pageTitle="Create Menu" />
-      <ComponentCard title="Create Menu">
-        {!update?<form
+    <form
           onSubmit={handleSubmit(submit)}
           className="max-w-md mx-auto text-gray-500 dark:text-white p-6"
         >
@@ -182,14 +137,30 @@ function Menu() {
           </div>
 
             
+            
+<div className="flex">
+    <div className="flex items-center me-4">
+        <input {...register('is_avaliable')} defaultChecked id="inline-radio" type="radio" value='true' name="inline-radio-group" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+        <label  className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Available</label>
+    </div>
+    <div className="flex items-center me-4">
+        <input {...register('is_avaliable')} id="inline-2-radio" type="radio" value="false" name="inline-radio-group" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+        <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Not Available</label>
+    </div>
+    
+</div>{errors.is_avaliable ? (
+              <p className="text-red-500">{errors.is_avaliable.message}</p>
+            ) : (
+              <></>
+            )}
 
           
-         {!update&& <div className="py-3">
+         { <div className="py-3">
             <label
               htmlFor="images"
               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >
-              Upload multiple images
+              Upload Image
             </label>
             <input
               type="file"
@@ -200,26 +171,26 @@ function Menu() {
               <p className="text-red-500">{errors.image.message as string}</p>
             )}
           </div>}
+         {errors.image ? (
+              <p className="text-red-500">{errors.image.message}</p>
+            ) : (
+              <></>
+            )}
 
           <button
             disabled={isSubmitting}
             type="submit"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
-            {isSubmitting || isLoading ? (
-              <span className="loading loading-spinner loading-xs"></span>
-            ) : update ? (
-              "Update"
-            ) : (
-              "Register"
-            )}
-          </button>
-        </form> : <UpdateForm editData={editData}></UpdateForm> }
-      </ComponentCard>
+            {
+              isLoading &&  <span className="loading loading-spinner loading-xs"></span>
+            }
 
-      <ShowMenu  updateStart={updateStart} delteBtn={delteBtn}/>
-    </>
-  );
+                Update
+            
+          </button>
+        </form>
+  )
 }
 
-export default Menu;
+export default UpdateForm

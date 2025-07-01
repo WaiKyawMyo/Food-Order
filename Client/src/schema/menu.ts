@@ -15,6 +15,5 @@ export const LoginSchema = z.object({
         ["image/png", "image/jpeg", "image/jpg", "image/gif"].includes(file.type)
       ),
     { message: "Only image files are allowed." }
-  ).optional()
-      .or(z.literal(''))
+  )
 });
