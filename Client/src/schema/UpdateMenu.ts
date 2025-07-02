@@ -2,7 +2,7 @@ import { z } from "zod/v4";
 
 
 export const UpdateMenuSchema = z.object({
-  _id: z.string(),
+ 
   name: z.string().min(1, "Name required"),
   type: z.string().min(1, "Type required"),
   is_avaliable: z.union([z.enum(['true', 'false']), z.boolean()]),

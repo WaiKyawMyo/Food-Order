@@ -108,7 +108,7 @@ function ShowMenu({updateStart,delteBtn}:Prop) {
                     {data.is_avaliable  ? <div className="border-2 border-green-600 rounded-2xl text-center w-23 bg-green-200 dark:text-white dark:bg-green-950 mx-auto p-1">
                        Available
                     </div> : <div className="border-2 border-red-600 rounded-2xl text-center w-23 bg-red-950 text-white p-1 mx-auto">
-                       Available
+                       Not Available
                     </div>}
                   </td>
                   <td className="px-6 py-2 text-center">

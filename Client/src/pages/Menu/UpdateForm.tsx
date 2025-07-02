@@ -2,9 +2,10 @@ import { z } from "zod/v4";
 import { UpdateMenuSchema } from "../../schema/UpdateMenu";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { useUpdateMenuMutation } from "../../Slice/ApiSclice/AdminApi";
-import { toast } from "react-toastify";
+import { Bounce, toast, ToastContainer } from "react-toastify";
+
 
 
 type Input = z.infer<typeof UpdateMenuSchema >;
@@ -17,10 +18,11 @@ type EditData = {
   
 } | null
 type prop ={
-    editData: EditData
+    editData: EditData,
+   setUpdate: Dispatch<SetStateAction<boolean>>;
 }
 
-function UpdateForm({editData}:prop) {
+function UpdateForm({editData,setUpdate}:prop) {
 
     const [updateData,{isLoading}]=useUpdateMenuMutation()
      const {
@@ -40,6 +42,7 @@ defaultValues: {
       useEffect(() => {
     if (editData) {
       reset({
+      
         name: editData.name,
         type: editData.type,
         price: editData.price,
@@ -49,6 +52,11 @@ defaultValues: {
       reset();
     }
   }, [reset, editData]);
+
+  const back = ()=>{
+    setUpdate(false)
+    
+  }
      const submit: SubmitHandler<Input> = async (data) => {
        try{
          const formData = new FormData();
@@ -69,17 +77,35 @@ defaultValues: {
             const res= await updateData(formData)
             console.log(res)
             if(res.error){
-                toast.error(res.data.error.message);
+                toast.error(res.error.data.message);
                 
             }
+            toast.success(res.data.message)
+            setUpdate(false)
        }catch(err:any){
         toast.error(err.data.message)
        }
      }
   return (
+<>
+   <ToastContainer
+        className={"mt-14"}
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
+      
     <form
           onSubmit={handleSubmit(submit)}
-          className="max-w-md mx-auto text-gray-500 dark:text-white p-6"
+          className="max-w-md mx-auto text-gray-500 dark:text-white p-6 py-4"
         >
           <div className="relative z-0 w-full mb-5 group ">
             <input
@@ -140,11 +166,11 @@ defaultValues: {
             
 <div className="flex">
     <div className="flex items-center me-4">
-        <input {...register('is_avaliable')} defaultChecked id="inline-radio" type="radio" value='true' name="inline-radio-group" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+        <input {...register('is_avaliable')} defaultChecked id="inline-radio" type="radio" value='true' className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
         <label  className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Available</label>
     </div>
     <div className="flex items-center me-4">
-        <input {...register('is_avaliable')} id="inline-2-radio" type="radio" value="false" name="inline-radio-group" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+        <input {...register('is_avaliable')} id="inline-2-radio" type="radio" value="false"  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
         <label className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Not Available</label>
     </div>
     
@@ -189,7 +215,12 @@ defaultValues: {
                 Update
             
           </button>
+          <button onClick={back} className="text-white ml-3 bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ">
+             Cancle
+          </button>
         </form>
+
+        </>
   )
 }
 

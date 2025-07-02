@@ -118,6 +118,11 @@ const [updateAdmin] = useUpdateAdminMutation();
       toast.error(err?.data?.message || err.message);
     }
   };
+  const back=()=>{
+    setUpdate(false)
+    setEditData(null);
+     reset();
+  }
 
   return (
     <>
@@ -207,7 +212,11 @@ const [updateAdmin] = useUpdateAdminMutation();
               "Update"
             ):("Register")}
           </button>
+         {update && <button onClick={back} className="text-white ml-3 bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ">
+             Cancle
+          </button>}
         </form>
+
       </ComponentCard>
       <ShowStaff updateStart={updateStart} delteBtn={delteBtn}/>
     </>
