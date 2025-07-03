@@ -9,7 +9,7 @@ type Prop = {
   updateStart: (name: string, type: string, is_avaliable: boolean, price: number, _id: string) => void
   delteBtn: (val: string) => void  // Fixed spelling here
 }
-type Itable = {
+export type Itable = {
   _id:string,
   name:string,
   type:string,

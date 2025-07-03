@@ -18,7 +18,7 @@ import StaffCheck from "./pages/StaffCheck";
 import CreateTable from "./pages/TablesCreate/CreateTable";
 import CheckSignin from "./components/auth/CheckSignin";
 import Menu from "./pages/Menu/Menu";
-import Set_menu from "./pages/Menu/Set_menu";
+import Set_menu from "./pages/SetMenu/Set_menu";
 
 export function ClearLocalStorageOnClose() {
   useEffect(() => {

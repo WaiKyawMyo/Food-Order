@@ -6,12 +6,16 @@ interface ISet {
     image:string,
     cloudinary_id:string,
     timestamp:Date,
-    
+    price:Number
 }
 
 
 const SetSchema = new Schema<ISet>({
     name:{
+        type:String,
+        required:true
+    },
+    price:{
         type:String,
         required:true
     },

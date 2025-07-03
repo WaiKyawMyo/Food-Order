@@ -150,8 +150,15 @@ export const AdminApiSlice = api.injectEndpoints({
                 method:'put',
                 body:data
             })
+        }),
+        crateSet:build.mutation({
+            query:(data)=>({
+                url:'',
+                method: "post",
+                body:data
+            })
         })
     }),
     
 })
-export const{useCreateMenuMutation,useDeleteMenuMutation,useUpdateMenuMutation,useGetallMenuMutation ,useUpdateAdminMutation,useGetAllAdminMutation,useDeleteAdminMutation, useLoginMutation,useLogoutMutation,useUpdateSchemaMutation,useGetAllTableMutation,useAdminProfileMutation,useRegisterStaffMutation,useCreteateTableMutation,useDeleteTableMutation ,useUpdateTabelMutation}=AdminApiSlice
+export const{useCreateMenuMutation,useCrateSetMutation,useDeleteMenuMutation,useUpdateMenuMutation,useGetallMenuMutation ,useUpdateAdminMutation,useGetAllAdminMutation,useDeleteAdminMutation, useLoginMutation,useLogoutMutation,useUpdateSchemaMutation,useGetAllTableMutation,useAdminProfileMutation,useRegisterStaffMutation,useCreteateTableMutation,useDeleteTableMutation ,useUpdateTabelMutation}=AdminApiSlice
