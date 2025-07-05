@@ -13,7 +13,14 @@ export const CreaetSet = asyncHandler(async(req:Request,res:Response)=>{
          res.status(400).json({ message: 'No file uploaded' });
          return
       }
-    
+      let parsedMenuItems = menu_items;
+if (typeof menu_items === "string") {
+  try {
+    parsedMenuItems = JSON.parse(menu_items);
+  } catch {
+    parsedMenuItems = [];
+  }
+}
       try {
         // Upload to Cloudinary
         const result = await  cloudinary.uploader.upload(filePath, {
@@ -34,14 +41,16 @@ export const CreaetSet = asyncHandler(async(req:Request,res:Response)=>{
         await fs.unlink(filePath);
 
          // Link menu items to the set (if any)
-        if (Array.isArray(menu_items) && menu_items.length > 0) {
-            for (const item of menu_items) {
+        if (Array.isArray(parsedMenuItems) && menu_items.length > 0) {
+            for (const item of parsedMenuItems) {
                 await SetMenu.create({
                     set_id: set._id,
-                    menu_id: item.menu_id,
-                    unit_Quantity: item.unit_Quantity
+                    menu_id: item._id,
+                    unit_Quantity: item.qty
                 });
             }
+        }else{
+          res.status(400).json({message:"Error at Set Data"})
         }
     
          res.status(200).json({
@@ -54,4 +63,57 @@ export const CreaetSet = asyncHandler(async(req:Request,res:Response)=>{
         try { await fs.unlink(filePath); } catch {}
        res.status(500).json({ message: 'Fail Created', details: error });
       }
+
+      
+})
+
+export const getAllSet =asyncHandler(async(req:Request,res:Response)=>{
+  // Inside your async handler:
+const setsWithMenus = await Set.aggregate([
+  {
+    $lookup: {
+      from: "set_menus", // the collection name, lowercased and pluralized by Mongoose
+      localField: "_id",
+      foreignField: "set_id",
+      as: "menus_in_set"
+    }
+  },
+  {
+    $unwind: {
+      path: "$menus_in_set",
+      preserveNullAndEmptyArrays: true
+    }
+  },
+  {
+    $lookup: {
+      from: "menus", // replace with your actual collection name
+      localField: "menus_in_set.menu_id",
+      foreignField: "_id",
+      as: "menu_details"
+    }
+  },
+  {
+    $unwind: {
+      path: "$menu_details",
+      preserveNullAndEmptyArrays: true
+    }
+  },
+  {
+    $group: {
+      _id: "$_id",
+      name: { $first: "$name" },
+      price: { $first: "$price" },
+      image: { $first: "$image" },
+      cloudinary_id: { $first: "$cloudinary_id" },
+      menus: {
+        $push: {
+          menu: "$menu_details",
+          unit_Quantity: "$menus_in_set.unit_Quantity"
+        }
+      }
+    }
+  }
+]);
+
+res.status(200).json(setsWithMenus);
 })

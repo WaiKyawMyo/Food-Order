@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
-import {  useState } from "react";
+import {  useEffect, useState } from "react";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import ShowMenu from "./ShowMenu";
 import UpdateForm from "./UpdateForm";
@@ -47,6 +47,7 @@ function Menu() {
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       is_avaliable: true,
+      price:0
     },
   });
   const updateStart = (
@@ -78,7 +79,7 @@ function Menu() {
       toast.error(err.message);
     }
   };
-
+  
   const submit: SubmitHandler<Input> = async (data) => {
     try {
       
@@ -189,7 +190,7 @@ function Menu() {
               htmlFor="images"
               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >
-              Upload multiple images
+              Upload Image
             </label>
             <input
               type="file"
