@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
-import {  useEffect, useState } from "react";
+import {  useState } from "react";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import ShowMenu from "./ShowMenu";
 import UpdateForm from "./UpdateForm";

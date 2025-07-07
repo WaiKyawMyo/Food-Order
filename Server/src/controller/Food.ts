@@ -105,7 +105,7 @@ export const updateMenu = asyncHandler(async (req: Request, res: Response) => {
     is_avaliable === "1";
 
   await menu.save();
-
+  
   res.status(200).json({ menu, message: "Menu updated!" });
   }
 

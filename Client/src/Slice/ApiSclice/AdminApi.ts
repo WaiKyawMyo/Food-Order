@@ -163,8 +163,22 @@ export const AdminApiSlice = api.injectEndpoints({
                 url:'/get-set',
                 method:'get',
             })
+        }),
+        deleteSet:build.mutation({
+            query:(data)=>({
+                url:'/get-set',
+                method:'delete',
+                body:data
+            })
+        }),
+        updateSet:build.mutation({
+            query:(data)=>({
+                url:'/get-set',
+                method:'put',
+                body:data
+            })
         })
     }),
     
 })
-export const{useCreateMenuMutation,useGetAllSetMutation, useCrateSetMutation,useDeleteMenuMutation,useUpdateMenuMutation,useGetallMenuMutation ,useUpdateAdminMutation,useGetAllAdminMutation,useDeleteAdminMutation, useLoginMutation,useLogoutMutation,useUpdateSchemaMutation,useGetAllTableMutation,useAdminProfileMutation,useRegisterStaffMutation,useCreteateTableMutation,useDeleteTableMutation ,useUpdateTabelMutation}=AdminApiSlice
+export const{useDeleteSetMutation,useUpdateSetMutation, useCreateMenuMutation,useGetAllSetMutation, useCrateSetMutation,useDeleteMenuMutation,useUpdateMenuMutation,useGetallMenuMutation ,useUpdateAdminMutation,useGetAllAdminMutation,useDeleteAdminMutation, useLoginMutation,useLogoutMutation,useUpdateSchemaMutation,useGetAllTableMutation,useAdminProfileMutation,useRegisterStaffMutation,useCreteateTableMutation,useDeleteTableMutation ,useUpdateTabelMutation}=AdminApiSlice

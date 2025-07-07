@@ -117,3 +117,78 @@ const setsWithMenus = await Set.aggregate([
 
 res.status(200).json(setsWithMenus);
 })
+
+export const deleteSet = asyncHandler(async(req:Request,res:Response)=>{
+  const {_id}=req.body
+  const data = await Set.findById(_id)
+      if (!_id || !data) {
+          res.status(400)
+          throw new Error('Menu not found.')
+      }
+       if (data.cloudinary_id) {
+          await cloudinary.uploader.destroy(data.cloudinary_id);
+      }
+      await Set.findByIdAndDelete(_id)
+      await SetMenu.deleteMany({set_id:_id})
+      res.status(200).json({ message:"Set deleted successfully" })
+})
+
+export const updaetSet = asyncHandler(async(req:Request,res:Response)=>{
+  const {_id,name,price ,menu_items}=req.body
+  const filePath = req.file?.path; 
+  if(!_id){
+    res.status(400).json({message:"Set not found"})
+  }
+  
+  let parsedMenuItems = menu_items;
+  if (typeof menu_items === "string") {
+    try {
+      parsedMenuItems = JSON.parse(menu_items);
+    } catch {
+      parsedMenuItems = [];
+    }
+  }
+  const menu = await Set.findById(_id);
+  if(!menu){
+    res.status(404).json({message:"Set not found"})
+  }else{
+ if (filePath) {
+      if (menu.cloudinary_id) {
+        await cloudinary.uploader.destroy(menu.cloudinary_id);
+      }
+      // Upload new image
+      const result = await cloudinary.uploader.upload(filePath, {
+        resource_type: "auto",
+      });
+      menu.image = result.secure_url;
+      menu.cloudinary_id = result.public_id;
+      // Delete local file
+      await fs.unlink(filePath);
+    }
+     // Update other fields
+      menu.name = name;
+      menu.price = Number(price);
+
+      
+  // Remove old SetMenu links
+  await SetMenu.deleteMany({ set_id: _id });
+
+  // Add new SetMenu links
+  if (Array.isArray(parsedMenuItems) && parsedMenuItems.length > 0) {
+    for (const item of parsedMenuItems) {
+      await SetMenu.create({
+        set_id: _id,
+        menu_id: item._id,
+        unit_Quantity: item.qty,
+      });
+    }
+  }
+
+  await menu.save();
+
+  res.status(200).json({ menu, message: "Set updated successfully" });
+
+  }
+
+ 
+})
