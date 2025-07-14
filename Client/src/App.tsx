@@ -19,6 +19,7 @@ import CreateTable from "./pages/TablesCreate/CreateTable";
 import CheckSignin from "./components/auth/CheckSignin";
 import Menu from "./pages/Menu/Menu";
 import Set_menu from "./pages/SetMenu/Set_menu";
+import Reservation from "./pages/Reservation/Reservation";
 
 export function ClearLocalStorageOnClose() {
   useEffect(() => {
@@ -63,8 +64,8 @@ export default function App() {
             {/* Tables */}
             <Route path="/basic-tables" element={<BasicTables />} />
 
-            {/* Ui Elements */}
-         
+            {/* Reservation*/}
+            <Route path="/reservation" element={<Reservation />} />
             
             
 

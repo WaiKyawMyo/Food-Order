@@ -33,23 +33,6 @@ const navItems: NavItem[] = [
     subItems: [{ name:'Home', path: "/home", pro: false }],
   },
   {
-    icon: <FontAwesomeIcon icon={faCirclePlus} />,
-    name: "Add Table",
-    path: "/add-table",
-  },
-  {
-    icon: <UserCircleIcon />,
-    name: "Add Staff",
-    path: "/staffRegister",
-  },
-  {
-    name: "Menu",
-    icon: <FontAwesomeIcon icon={faUtensils} />,
-    subItems: [{ name: "Menu", path: "/menu", pro: false },
-      { name: "Set Menu", path: "/set-menu", pro: false }
-    ],
-  },
-  {
     name: "Forms",
     icon: <ListIcon />,
     subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
@@ -70,17 +53,39 @@ const navItems: NavItem[] = [
 ];
 
 const othersItems: NavItem[] = [
+  
   {
+    icon: <FontAwesomeIcon icon={faCirclePlus} />,
+    name: "Add Table",
+    path: "/add-table",
+  },
+  {
+    icon: <UserCircleIcon />,
+    name: "Add Staff",
+    path: "/staffRegister",
+  },
+  {
+    name: "Menu",
+    icon: <FontAwesomeIcon icon={faUtensils} />,
+    subItems: [{ name: "Menu", path: "/menu", pro: false },
+      { name: "Set Menu", path: "/set-menu", pro: false }
+    ],
+  },{
+    icon: <UserCircleIcon />,
+    name: "Reservation",
+    path: "/reservation",
+  },{
     icon: <PieChartIcon />,
     name: "Charts",
     subItems: [
       { name: "Line Chart", path: "/line-chart", pro: false },
       { name: "Bar Chart", path: "/bar-chart", pro: false },
     ],
-  },
+  }
 
   
 ];
+
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
@@ -324,7 +329,7 @@ const AppSidebar: React.FC = () => {
                 }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "Menu"
+                  "Main"
                 ) : (
                   <HorizontaLDots className="size-6" />
                 )}
@@ -340,13 +345,14 @@ const AppSidebar: React.FC = () => {
                 }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "Others"
+                  "Manage"
                 ) : (
                   <HorizontaLDots />
                 )}
               </h2>
               {renderMenuItems(othersItems, "others")}
             </div>
+            
           </div>
         </nav>
        

@@ -119,8 +119,8 @@ function Set_menu() {
         toast.error(res.error.data.message);
       } else {
         toast.success("Success Delete");
-        // setEditData(null);
-        // setUpdate(false);
+         setEditData(null);
+         //setUpdate(false);
         reset();
         setRefreshKey((prev) => prev + 1);
       }
