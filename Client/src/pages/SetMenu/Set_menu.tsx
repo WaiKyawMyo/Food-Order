@@ -355,14 +355,17 @@ function Set_menu() {
           </form>
         ) : (
           <UpdateSet
+          
             editData={editData}
             back={() => {
               setUpdateMode(false);
               setEditData(null);
+              reset()
             }}
             onSuccess={() => {
               setUpdateMode(false);
               setEditData(null);
+              reset()
               setRefreshKey((prev) => prev + 1); // Refresh table
             }}
           />

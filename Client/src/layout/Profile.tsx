@@ -30,7 +30,7 @@ function Profile({setProfilebtn}:Props) {
     const [user, setUser] = useState<UserType | null>(null);
     const dispath = useDispatch()
     const [updatepro, { isLoading }] = useUpdateSchemaMutation()
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Loginfrom>({
+    const { register, handleSubmit, reset,formState: { errors, isSubmitting } } = useForm<Loginfrom>({
         resolver: zodResolver(updateSchema)
     })
 
@@ -60,6 +60,7 @@ function Profile({setProfilebtn}:Props) {
     const backDetail = async () => {
         setUpdate(false)
         setProfilebtn(true)
+
     }
     const cancleBTN = () => {
         document.body.style.overflow = ""
@@ -155,7 +156,7 @@ function Profile({setProfilebtn}:Props) {
                             </div>
                             <div className="mb-5">
                                 <label className="block mb-2 text-sm font-medium text-gray-900 ">Your email</label>
-                                <input {...register('email')} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 " placeholder="name@flowbite.com" />
+                                <input {...register('email')} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 " placeholder="name@gamil.com" />
                                 {errors.email ? <p className='text-red-400'>{errors.email?.message}</p> : <></>}
 
                             </div>

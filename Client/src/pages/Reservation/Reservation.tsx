@@ -3,9 +3,10 @@ import { useGetReservationMutation } from "../../Slice/ApiSclice/AdminApi";
 import ComponentCard from "../../components/common/ComponentCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router";
 
 function Reservation() {
-  const header = ["username", "Table_No", "capacity", "Date", "Time"];
+  const header = ["username", "Table_No", "capacity", "Date", "Time","detail"];
   const [getAll] = useGetReservationMutation();
   const [tableData, setTabelData] = useState([]);
   const rowPerPage = 10;
@@ -16,6 +17,7 @@ function Reservation() {
   { value: 'upcoming', label: 'Upcoming' },
   { value: 'completed', label: 'Completed' },
 ];
+ const navigate = useNavigate()
 
 
 const [selectedStatus, setSelectedStatus] = useState('upcoming');
@@ -138,6 +140,9 @@ const filterByStatus = (data, status) => {
                               hour12: true,
                             }
                           )}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <button onClick={()=>navigate(`/reservation/${data._id} `)} className="p-3 bg-blue-500 rounded text-white cursor-pointer">View</button>
                         </td>
                       </tr>
                     );

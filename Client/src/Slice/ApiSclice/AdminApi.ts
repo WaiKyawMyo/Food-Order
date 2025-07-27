@@ -183,7 +183,8 @@ export const AdminApiSlice = api.injectEndpoints({
                 url:"/get-reservation",
                 method:'get',
             })
-        })
+        }),
+      
     }),
     
 })

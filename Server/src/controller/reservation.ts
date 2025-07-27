@@ -3,6 +3,8 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { Reservation } from "../model/reservation";
 import { User } from "../model/user";        // Import User model first
 import { Table } from "../model/tabel";
+import { Order } from "../model/Order";
+import { OrderMenu } from "../model/Order_Menu";
 
 
 
@@ -14,5 +16,41 @@ export const myReservationGet =asyncHandler(async(req:Request,res:Response)=>{
   }else{
     res.status(200).json(reservations);
   }
-  
 })
+
+export const detailReservation = asyncHandler(async(req: Request, res: Response) => {
+    const { id } = req.params;  // Get from params, not body
+
+    if (!id) {
+         res.status(400).json({
+            success: false,
+            message: "Reservation ID is required"
+        });
+    }
+
+    const orders = await Order.findOne({ reservation_id: id })
+        .populate('reservation_id')
+        .populate('table_id')
+        .populate('user_id');
+
+    if (!orders) {
+         res.status(404).json({
+            success: false,
+            message: "Order not found"
+        });
+    }else{
+       const orderMenuItems = await OrderMenu.find({ order_id: orders._id })
+        .populate('menu_id')
+        .populate('set_id');
+
+     res.status(200).json({
+        success: true,
+        data: {
+            order: orders,
+            items: orderMenuItems
+        }
+    }); 
+    }
+
+    
+});

@@ -103,6 +103,7 @@ function UpdateSet({ editData, back, onSuccess }: Props) {
   // Handle Cancel/Close
   function handleCancel() {
     setModalOpen(false);
+    reset()
   }
 
   const clickDrink = async (filter: string) => {

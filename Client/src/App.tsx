@@ -20,6 +20,7 @@ import CheckSignin from "./components/auth/CheckSignin";
 import Menu from "./pages/Menu/Menu";
 import Set_menu from "./pages/SetMenu/Set_menu";
 import Reservation from "./pages/Reservation/Reservation";
+import Detail from "./pages/Reservation/Detail";
 
 export function ClearLocalStorageOnClose() {
   useEffect(() => {
@@ -67,7 +68,7 @@ export default function App() {
             {/* Reservation*/}
             <Route path="/reservation" element={<Reservation />} />
             
-            
+            <Route path="/reservation/:id" element={<Detail />} />
 
             {/* Charts */}
             <Route path="/line-chart" element={<LineChart />} />
