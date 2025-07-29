@@ -6,6 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useCreateDiscountMutation } from "../../Slice/ApiSclice/AdminApi";
+import ShowDiscount from "./ShowDiscount";
 
 type Input = z.infer<typeof discountSchema>;
 function Discount() {
@@ -38,8 +39,8 @@ function Discount() {
         };
   return (
     <>
-        <PageBreadcrumb pageTitle="Create Table" />
-              <ComponentCard title="Create Table">
+        <PageBreadcrumb pageTitle="Discount" />
+              <ComponentCard title="Discount">
                 <ToastContainer
                  className={'mt-14'}
                 position="top-right"
@@ -107,6 +108,8 @@ function Discount() {
                   
                 </form>
               </ComponentCard>
+
+              <ShowDiscount/>
     </>
   )
 }

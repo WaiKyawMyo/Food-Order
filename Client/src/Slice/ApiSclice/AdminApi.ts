@@ -190,9 +190,16 @@ export const AdminApiSlice = api.injectEndpoints({
                 method:'post',
                 body:data
             })
+        }),
+        getDiscount:build.mutation({
+            query:()=>({
+                url:"/dicountdata",
+                method:'get',
+
+            })
         })
       
     }),
     
 })
-export const{useDeleteSetMutation,useCreateDiscountMutation,useUpdateSetMutation,useGetReservationMutation ,useCreateMenuMutation,useGetAllSetMutation, useCrateSetMutation,useDeleteMenuMutation,useUpdateMenuMutation,useGetallMenuMutation ,useUpdateAdminMutation,useGetAllAdminMutation,useDeleteAdminMutation, useLoginMutation,useLogoutMutation,useUpdateSchemaMutation,useGetAllTableMutation,useAdminProfileMutation,useRegisterStaffMutation,useCreteateTableMutation,useDeleteTableMutation ,useUpdateTabelMutation}=AdminApiSlice
+export const{useDeleteSetMutation, useGetDiscountMutation,useCreateDiscountMutation,useUpdateSetMutation,useGetReservationMutation ,useCreateMenuMutation,useGetAllSetMutation, useCrateSetMutation,useDeleteMenuMutation,useUpdateMenuMutation,useGetallMenuMutation ,useUpdateAdminMutation,useGetAllAdminMutation,useDeleteAdminMutation, useLoginMutation,useLogoutMutation,useUpdateSchemaMutation,useGetAllTableMutation,useAdminProfileMutation,useRegisterStaffMutation,useCreteateTableMutation,useDeleteTableMutation ,useUpdateTabelMutation}=AdminApiSlice

@@ -5,7 +5,8 @@ import { User } from "../model/user";        // Import User model first
 import { Table } from "../model/tabel";
 import { Order } from "../model/Order";
 import { OrderMenu } from "../model/Order_Menu";
-import { Discount } from "../model/Discount";
+import { Discount } from "../model/discount";
+
 
 
 
@@ -77,3 +78,8 @@ export const createDiscount= asyncHandler(async(req,res)=>{
     }
 
 })
+
+export const getDiscount = asyncHandler(async(req,res)=>{
+    const response = await Discount.find()
+    res.status(200).json({response,message:"Success get discount"})
+} )
