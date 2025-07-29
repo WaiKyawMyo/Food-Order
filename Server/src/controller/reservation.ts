@@ -5,6 +5,7 @@ import { User } from "../model/user";        // Import User model first
 import { Table } from "../model/tabel";
 import { Order } from "../model/Order";
 import { OrderMenu } from "../model/Order_Menu";
+import { Discount } from "../model/Discount";
 
 
 
@@ -54,3 +55,25 @@ export const detailReservation = asyncHandler(async(req: Request, res: Response)
 
     
 });
+
+export const createDiscount= asyncHandler(async(req,res)=>{
+    const {name,persent}= req.body
+    const existingDiscount = await Discount.find()
+    if(existingDiscount.length){
+        
+        const update = existingDiscount[0]
+        update.name = name
+        update.persent = persent
+        update.status = true
+       const updateData= await update.save()
+       res.status(201).json({updateData,message:"Update Discount is Success"})
+    }else{
+        const newRes = await Discount.create({
+            name,
+            persent,
+            status: true
+        })
+        res.status(200).json({message:"Create Success",newRes})
+    }
+
+})

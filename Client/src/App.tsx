@@ -21,6 +21,7 @@ import Menu from "./pages/Menu/Menu";
 import Set_menu from "./pages/SetMenu/Set_menu";
 import Reservation from "./pages/Reservation/Reservation";
 import Detail from "./pages/Reservation/Detail";
+import Discount from "./pages/Discount/Discount";
 
 export function ClearLocalStorageOnClose() {
   useEffect(() => {
@@ -69,6 +70,9 @@ export default function App() {
             <Route path="/reservation" element={<Reservation />} />
             
             <Route path="/reservation/:id" element={<Detail />} />
+
+            {/* Discount */}
+            <Route path="/discount" element={<Discount />} />
 
             {/* Charts */}
             <Route path="/line-chart" element={<LineChart />} />
