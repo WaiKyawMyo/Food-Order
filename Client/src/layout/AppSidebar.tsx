@@ -16,7 +16,7 @@ import {
 import { useSidebar } from "../context/SidebarContext";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCirclePlus, faPercent, faUtensils } from "@fortawesome/free-solid-svg-icons";
+import { faCirclePlus, faPercent, faTable, faUtensils } from "@fortawesome/free-solid-svg-icons";
 
 
 type NavItem = {
@@ -31,6 +31,15 @@ const navItems: NavItem[] = [
     icon: <GridIcon />,
     name: "Dashboard",
     subItems: [{ name:'Home', path: "/home", pro: false }],
+  },
+  {
+    icon: <FontAwesomeIcon icon={faTable} />,
+    name: "Manage Table",
+    path: "/manage-table",
+  },{
+    icon: <UserCircleIcon />,
+    name: "Reservation",
+    path: "/reservation",
   },
   {
     name: "Forms",
@@ -75,10 +84,6 @@ const othersItems: NavItem[] = [
     subItems: [{ name: "Menu", path: "/menu", pro: false },
       { name: "Set Menu", path: "/set-menu", pro: false }
     ],
-  },{
-    icon: <UserCircleIcon />,
-    name: "Reservation",
-    path: "/reservation",
   },{
     icon: <PieChartIcon />,
     name: "Charts",
@@ -350,7 +355,7 @@ const AppSidebar: React.FC = () => {
                 }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "Manage"
+                  "create"
                 ) : (
                   <HorizontaLDots />
                 )}

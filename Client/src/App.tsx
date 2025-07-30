@@ -22,6 +22,7 @@ import Set_menu from "./pages/SetMenu/Set_menu";
 import Reservation from "./pages/Reservation/Reservation";
 import Detail from "./pages/Reservation/Detail";
 import Discount from "./pages/Discount/Discount";
+import ManageTable from "./pages/ManageTable";
 
 export function ClearLocalStorageOnClose() {
   useEffect(() => {
@@ -62,6 +63,9 @@ export default function App() {
 
             {/* Forms */}
             <Route path="/form-elements" element={<FormElements />} />
+
+            {/* Manage Table */}
+            <Route path="/manage-table" element={<ManageTable />} />
 
             {/* Tables */}
             <Route path="/basic-tables" element={<BasicTables />} />

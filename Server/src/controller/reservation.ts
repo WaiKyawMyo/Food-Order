@@ -83,3 +83,24 @@ export const getDiscount = asyncHandler(async(req,res)=>{
     const response = await Discount.find()
     res.status(200).json({response,message:"Success get discount"})
 } )
+
+export const getAllTable = asyncHandler(async(req,res)=>{
+    const response = await Table.find()
+    const AllData = []
+    
+    // Use for...of loop instead of map() for async operations
+    for(const table of response) {
+        const reservationData = await Reservation.findOne({table_id: table._id})
+        if(reservationData){
+            AllData.push({table, reservationData})
+        } else {
+            AllData.push({table})
+        }
+    }
+    
+    if(AllData.length){
+        res.status(200).json({data:AllData, message:"Success"})
+    } else {
+        res.status(404).json({message: "No tables found"})
+    }
+})

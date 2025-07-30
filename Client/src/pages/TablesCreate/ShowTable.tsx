@@ -112,7 +112,6 @@ function ShowTable({updateStart,delteBtn}:Prop) {
                   </td>
                 </tr>
               }) : <></>
-
               }
             </tbody>
           </table>
