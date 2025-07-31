@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useGetAlltabledataMutation } from "../Slice/ApiSclice/AdminApi";
+import { useGetAlltabledataMutation, useUpdatTableStatusMutation } from "../Slice/ApiSclice/AdminApi";
 import ComponentCard from "../components/common/ComponentCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from 'react-tooltip'
+import { Bounce, toast, ToastContainer } from "react-toastify";
 
 function ManageTable() {
     const header = ["Reservation Status", "Table_No", "capacity", "Table Status", "Action"];
@@ -12,7 +13,8 @@ function ManageTable() {
     const rowPerPage = 10;
     const [currentPage, setCurrentPage] = useState(1);
     const totalPage = Math.ceil(tableData.length / rowPerPage);
-
+    const [update,{isLoading}]=useUpdatTableStatusMutation()
+    const [click,setclick]= useState(false)
     // Function to format time for display
     const formatTime = (dateString) => {
         const date = new Date(dateString);
@@ -22,33 +24,69 @@ function ManageTable() {
             hour12: true 
         });
     };
+    const updatestatus = async(_id,status)=>{
+    
+        if(status=="available"){
+           const newupdate="not available"
+           const res= await update({_id,status:newupdate})
+           toast.success(res.message)
+           setclick(prev=>!prev)
+        }else{
+           const res= await update({_id,status:"available"})
+            toast.success(res.message)
+            setclick(prev=>!prev)
+        }
 
-    const getReservationStatus = (startTime) => {
-        const now = new Date();
-        const reservationTime = new Date(startTime);
-        const timeDifference = reservationTime.getTime() - now.getTime();
-        const minutesDifference = timeDifference / (1000 * 60);
         
-        if (minutesDifference < 0) {
-            // Reservation time has passed (started) - RED
+    }
+    const getReservationStatus = (startTime, endTime, tableStatus) => {
+    const now = new Date();
+    const reservationStartTime = new Date(startTime);
+    const reservationEndTime = new Date(endTime);
+    const startTimeDifference = reservationStartTime.getTime() - now.getTime();
+    const endTimeDifference = reservationEndTime.getTime() - now.getTime();
+    const minutesDifferenceStart = startTimeDifference / (1000 * 60);
+    const minutesDifferenceEnd = endTimeDifference / (1000 * 60);
+    
+    // If reservation end time is over, show green
+    if (minutesDifferenceEnd < 0) {
+        return {
+            color: 'bg-green-500',
+            tooltip: `No reservation`
+        };
+    }
+    
+    if (minutesDifferenceStart < 0) {
+        const minutesAfterStart = Math.abs(minutesDifferenceStart);
+        
+        // If table is available and reservation started more than 30 min ago, show green
+        if (tableStatus === 'available' && minutesAfterStart > 30) {
             return {
-                color: 'bg-red-500',
-                tooltip: `Reservation started at ${formatTime(startTime)} (${Math.abs(Math.round(minutesDifference))} min ago)`
-            };
-        } else if (minutesDifference <= 30) {
-            // Reservation is within 30 minutes - YELLOW
-            return {
-                color: 'bg-yellow-500',
-                tooltip: `Reservation at ${formatTime(startTime)} (${Math.round(minutesDifference)} min remaining)`
-            };
-        } else {
-            // Reservation is more than 30 minutes away - BLUE
-            return {
-                color: 'bg-blue-500',
-                tooltip: `Reservation at ${formatTime(startTime)} (${Math.round(minutesDifference)} min away)`
+                color: 'bg-green-500',
+                tooltip: `No reservation`
             };
         }
-    };
+        // Otherwise show red (reservation in progress)
+        else {
+            return {
+                color: 'bg-red-500',
+                tooltip: `Reservation started ${Math.round(minutesAfterStart)} min ago (In progress)`
+            };
+        }
+    } else if (minutesDifferenceStart <= 30) {
+        // Reservation is within 30 minutes - YELLOW
+        return {
+            color: 'bg-yellow-500',
+            tooltip: `Reservation starts at ${formatTime(startTime)} (${Math.round(minutesDifferenceStart)} min remaining)`
+        };
+    } else {
+        // Reservation is more than 30 minutes away - BLUE
+        return {
+            color: 'bg-blue-500',
+            tooltip: `Reservation starts at ${formatTime(startTime)} (${Math.round(minutesDifferenceStart)} min away)`
+        };
+    }
+};
 
     const handleClick = (page) => {
         setCurrentPage(page);
@@ -74,16 +112,19 @@ function ManageTable() {
     useEffect(() => {
         const data = async () => {
             const res = await getAll({});
-            console.log(res);
+        
             setTabelData(res.data.data || []);
         };
         data();
-    }, [getAll]);
+    }, [getAll,click]);
 
     return (
+        <>
+        
         <div className="py-6">
-           
+ 
             <ComponentCard title="Table Manage">
+                
                  <div className="mb-3 text-xs text-gray-600 dark:text-gray-400 flex items-center gap-4">
     <span className="font-medium">Status:</span>
     <span className="flex items-center gap-1">🟢 No Reservation</span>
@@ -115,8 +156,14 @@ function ManageTable() {
                                     // Determine reservation status and color
                                     let statusInfo = { color: 'bg-green-500', tooltip: 'No reservation' };
                                     
+                                                                        
                                     if (data.reservationData && data.reservationData.start_time) {
-                                        statusInfo = getReservationStatus(data.reservationData.start_time);
+                                        // Pass start time, end time, and table status as parameters
+                                        statusInfo = getReservationStatus(
+                                            data.reservationData.start_time, 
+                                            data.reservationData.end_time, 
+                                            data.table.status
+                                        );
                                     }
 
                                     return (
@@ -150,7 +197,7 @@ function ManageTable() {
                                                 }
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs">
+                                                <button disabled={isLoading} onClick={()=>updatestatus(data.table._id,data.table.status)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs">
                                                     {data.table.status === 'available' ? 'Occupy' : 'Clear'}
                                                 </button>
                                             </td>
@@ -204,6 +251,7 @@ function ManageTable() {
                 </div>
             </ComponentCard>
         </div>
+        </>
     )
 }
 
