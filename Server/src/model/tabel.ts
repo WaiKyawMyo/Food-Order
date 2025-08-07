@@ -5,6 +5,7 @@ interface ITable {
     capacity:number,
     is_reserved:boolean,
     status:string,
+    help:boolean,
     admin_id:mongoose.Types.ObjectId
 }
 
@@ -24,6 +25,10 @@ const tableSchema =new Schema<ITable> ({
     status:{
         type:String,
         required:true
+    },
+    help:{
+        type:Boolean,
+        required:true    
     },
     admin_id:{
         type:Schema.Types.ObjectId,
