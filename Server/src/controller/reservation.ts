@@ -106,7 +106,7 @@ export const getAllTable = asyncHandler(async(req,res)=>{
 })
 
 export const updatetable = asyncHandler(async(req,res)=>{
-    const {_id,status}= req.body
+    const {_id,status,code}= req.body
     if(!_id){
         res.status(400)
         throw new Error('Table not found.')
@@ -117,6 +117,7 @@ export const updatetable = asyncHandler(async(req,res)=>{
         throw new Error("Table is not found")
     }
     table.status= status
+    table.code =code
     await table.save()
     
     res.status(201).json({message:`Table ${table.table_No} is ${table.status}`})

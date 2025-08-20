@@ -7,7 +7,7 @@ import { Tooltip } from 'react-tooltip'
 import { Bounce, toast, ToastContainer } from "react-toastify";
 
 function ManageTable() {
-    const header = ["Reservation Status", "Table_No", "capacity", "Table Status", "Action"];
+    const header = ["Reservation Status", "Table_No", "capacity", "Table Status", "Code", "Action"];
     const [getAll] = useGetAlltabledataMutation();
     const [tableData, setTabelData] = useState([]);
     const rowPerPage = 10;
@@ -24,68 +24,94 @@ function ManageTable() {
             hour12: true 
         });
     };
-    const updatestatus = async(_id,status)=>{
-    
-        if(status=="available"){
-           const newupdate="not available"
-           const res= await update({_id,status:newupdate})
-           toast.success(res.message)
-           setclick(prev=>!prev)
-        }else{
-           const res= await update({_id,status:"available"})
-            toast.success(res.message)
-            setclick(prev=>!prev)
+    const updatestatus = async (_id, status) => {
+        try {
+            if (status === "available") {
+            // Generate a new code, e.g., random 6 digit number
+            const generatedCode = Math.floor(100000 + Math.random() * 900000);
+            
+            const res = await update({ _id, status: "not available", code: generatedCode });
+            
+            if (res.data?.message) {
+                toast.success(res.data.message);
+            } else {
+                toast.success("Table occupied with code generated");
+            }
+            
+            setclick(prev => !prev);
+            } else {
+            // Clear the code on freeing the table
+            const res = await update({ _id, status: "available", code: null });
+            
+            if (res.data?.message) {
+                toast.success(res.data.message);
+            } else {
+                toast.success("Table cleared and code reset");
+            }
+            
+            setclick(prev => !prev);
+            }
+        } catch (error) {
+            toast.error("Failed to update table status");
+            console.error(error);
         }
+        };
+   const getReservationStatus = (startTime, endTime, tableStatus) => {
+  const now = new Date();
+  const reservationStartTime = new Date(startTime);
+  const reservationEndTime = new Date(endTime);
 
-        
-    }
-    const getReservationStatus = (startTime, endTime, tableStatus) => {
-    const now = new Date();
-    const reservationStartTime = new Date(startTime);
-    const reservationEndTime = new Date(endTime);
-    const startTimeDifference = reservationStartTime.getTime() - now.getTime();
-    const endTimeDifference = reservationEndTime.getTime() - now.getTime();
-    const minutesDifferenceStart = startTimeDifference / (1000 * 60);
-    const minutesDifferenceEnd = endTimeDifference / (1000 * 60);
-    
-    // If reservation end time is over, show green
-    if (minutesDifferenceEnd < 0) {
-        return {
-            color: 'bg-green-500',
-            tooltip: `No reservation`
-        };
-    }
-    
-    if (minutesDifferenceStart < 0) {
-        const minutesAfterStart = Math.abs(minutesDifferenceStart);
-        
-        // If table is available and reservation started more than 30 min ago, show green
-        if (tableStatus === 'available' && minutesAfterStart > 30) {
-            return {
-                color: 'bg-green-500',
-                tooltip: `No reservation`
-            };
-        }
-        // Otherwise show red (reservation in progress)
-        else {
-            return {
-                color: 'bg-red-500',
-                tooltip: `Reservation started ${Math.round(minutesAfterStart)} min ago (In progress)`
-            };
-        }
-    } else if (minutesDifferenceStart <= 30) {
-        // Reservation is within 30 minutes - YELLOW
-        return {
-            color: 'bg-yellow-500',
-            tooltip: `Reservation starts at ${formatTime(startTime)} (${Math.round(minutesDifferenceStart)} min remaining)`
-        };
+  // Helper function to check if reservation is today
+  const isSameDay = (d1, d2) => 
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate();
+
+  // If reservation is not today, show green (no reservation today)
+  if (!isSameDay(reservationStartTime, now)) {
+    return {
+      color: 'bg-green-500',
+      tooltip: 'No reservation today'
+    };
+  }
+
+  // Existing logic for reservations today
+  const startTimeDifference = reservationStartTime.getTime() - now.getTime();
+  const endTimeDifference = reservationEndTime.getTime() - now.getTime();
+  const minutesDifferenceStart = startTimeDifference / (1000 * 60);
+  const minutesDifferenceEnd = endTimeDifference / (1000 * 60);
+
+  if (minutesDifferenceEnd < 0) {
+    return {
+      color: 'bg-green-500',
+      tooltip: 'No reservation (already ended today)'
+    };
+  }
+
+  if (minutesDifferenceStart < 0) {
+    const minutesAfterStart = Math.abs(minutesDifferenceStart);
+    if (tableStatus === 'available' && minutesAfterStart > 30) {
+      return {
+        color: 'bg-green-500',
+        tooltip: 'No reservation (available and started > 30min ago)'
+      };
     } else {
-        // Reservation is more than 30 minutes away - BLUE
-        return {
-            color: 'bg-blue-500',
-            tooltip: `Reservation starts at ${formatTime(startTime)} (${Math.round(minutesDifferenceStart)} min away)`
-        };
+      return {
+        color: 'bg-red-500',
+        tooltip: `Reservation started ${Math.round(minutesAfterStart)} min ago (In progress)`
+      };
     }
+  } else if (minutesDifferenceStart <= 30) {
+    return {
+      color: 'bg-yellow-500',
+      tooltip: `Reservation starts at ${formatTime(startTime)} (${Math.round(minutesDifferenceStart)} min remaining)`
+    };
+  } else {
+    return {
+      color: 'bg-blue-500',
+      tooltip: `Reservation starts at ${formatTime(startTime)} (${Math.round(minutesDifferenceStart)} min away)`
+    };
+  }
 };
 
     const handleClick = (page) => {
@@ -195,6 +221,9 @@ function ManageTable() {
                                                         {data.table.status}
                                                     </div>
                                                 }
+                                            </td>
+                                            <td className="px-6 py-4 text-center">
+                                                {data.table.code}
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <button disabled={isLoading} onClick={()=>updatestatus(data.table._id,data.table.status)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs">

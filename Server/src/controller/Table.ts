@@ -15,7 +15,8 @@ export const addTable = asyncHandler(async (req: AuthRequest, res: Response) => 
     const table = await Table.create({
         table_No,
         capacity,
-
+        help:false,
+        code:null,
         status,
         admin_id: req.user?._id
     })
@@ -24,7 +25,7 @@ export const addTable = asyncHandler(async (req: AuthRequest, res: Response) => 
             _id: table._id,
             table_No: table.table_No,
             capacity: table.capacity,
-            help:false,
+           
             status: table.status,
             admin_id: table.admin_id
         })

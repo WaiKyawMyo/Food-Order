@@ -68,9 +68,10 @@ function CreateTable() {
         const res = await tablecrate({
           table_No: data.table_No,
           capacity: Number(data.capacity),
-          is_reserved: true,
+          is_reserved: false,
           status: "available",
         });
+        reset()
         if (res.error) {
           toast.error(res?.error?.data.message);
         } else {
@@ -84,9 +85,10 @@ function CreateTable() {
             capacity: data.capacity,
           });
           console.log(res);
-
+          
           if (res.error) {
             toast.error(res.error.data.message);
+            reset()
           } else {
             toast.success(res.data.message);
             setEditData(null);

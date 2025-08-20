@@ -6,6 +6,7 @@ interface ITable {
     is_reserved:boolean,
     status:string,
     help:boolean,
+    code:number | null,
     admin_id:mongoose.Types.ObjectId
 }
 
@@ -29,6 +30,10 @@ const tableSchema =new Schema<ITable> ({
     help:{
         type:Boolean,
         required:true    
+    },
+    code:{
+        type:Number, 
+        default: null  
     },
     admin_id:{
         type:Schema.Types.ObjectId,
