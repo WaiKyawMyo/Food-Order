@@ -210,9 +210,16 @@ export const AdminApiSlice = api.injectEndpoints({
                 method:"put",
                 body:data
             })
+        }),
+        creaetCustomer:build.mutation({
+            query:(data)=>({
+                url:"/alltabledata",
+                method:"post",
+                body:data
+            })
         })
       
     }),
     
 })
-export const{useDeleteSetMutation,useGetAlltabledataMutation,useUpdatTableStatusMutation ,useGetDiscountMutation,useCreateDiscountMutation,useUpdateSetMutation,useGetReservationMutation ,useCreateMenuMutation,useGetAllSetMutation, useCrateSetMutation,useDeleteMenuMutation,useUpdateMenuMutation,useGetallMenuMutation ,useUpdateAdminMutation,useGetAllAdminMutation,useDeleteAdminMutation, useLoginMutation,useLogoutMutation,useUpdateSchemaMutation,useGetAllTableMutation,useAdminProfileMutation,useRegisterStaffMutation,useCreteateTableMutation,useDeleteTableMutation ,useUpdateTabelMutation}=AdminApiSlice
+export const{useDeleteSetMutation, useCreaetCustomerMutation,useGetAlltabledataMutation,useUpdatTableStatusMutation ,useGetDiscountMutation,useCreateDiscountMutation,useUpdateSetMutation,useGetReservationMutation ,useCreateMenuMutation,useGetAllSetMutation, useCrateSetMutation,useDeleteMenuMutation,useUpdateMenuMutation,useGetallMenuMutation ,useUpdateAdminMutation,useGetAllAdminMutation,useDeleteAdminMutation, useLoginMutation,useLogoutMutation,useUpdateSchemaMutation,useGetAllTableMutation,useAdminProfileMutation,useRegisterStaffMutation,useCreteateTableMutation,useDeleteTableMutation ,useUpdateTabelMutation}=AdminApiSlice

@@ -6,6 +6,7 @@ import { Table } from "../model/tabel";
 import { Order } from "../model/Order";
 import { OrderMenu } from "../model/Order_Menu";
 import { Discount } from "../model/discount";
+import { Customer } from "../model/Customer";
 
 
 
@@ -121,4 +122,13 @@ export const updatetable = asyncHandler(async(req,res)=>{
     await table.save()
     
     res.status(201).json({message:`Table ${table.table_No} is ${table.status}`})
+})
+
+export const CreateCustomer = asyncHandler(async(req,res)=>{
+    const {table_id}= req.body
+    const newRes = await Customer.create({
+    table_id
+    
+        })
+        res.status(200).json({message:"Create Success",newRes})
 })

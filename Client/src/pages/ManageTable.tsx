@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useGetAlltabledataMutation, useUpdatTableStatusMutation } from "../Slice/ApiSclice/AdminApi";
+import { useCreaetCustomerMutation, useGetAlltabledataMutation, useUpdatTableStatusMutation } from "../Slice/ApiSclice/AdminApi";
 import ComponentCard from "../components/common/ComponentCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
@@ -14,6 +14,7 @@ function ManageTable() {
     const [currentPage, setCurrentPage] = useState(1);
     const totalPage = Math.ceil(tableData.length / rowPerPage);
     const [update,{isLoading}]=useUpdatTableStatusMutation()
+    const [creaete]=useCreaetCustomerMutation()
     const [click,setclick]= useState(false)
     // Function to format time for display
     const formatTime = (dateString) => {
@@ -31,8 +32,9 @@ function ManageTable() {
             const generatedCode = Math.floor(100000 + Math.random() * 900000);
             
             const res = await update({ _id, status: "not available", code: generatedCode });
-            
-            if (res.data?.message) {
+            const restable = await creaete({table_id:_id})
+            console.log(restable)
+            if (res.data?.message ) {
                 toast.success(res.data.message);
             } else {
                 toast.success("Table occupied with code generated");
