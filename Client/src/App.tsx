@@ -23,6 +23,7 @@ import Reservation from "./pages/Reservation/Reservation";
 import Detail from "./pages/Reservation/Detail";
 import Discount from "./pages/Discount/Discount";
 import ManageTable from "./pages/ManageTable";
+import ManageTableDetail from "./pages/ManageTableDetail";
 
 export function ClearLocalStorageOnClose() {
   useEffect(() => {
@@ -66,6 +67,8 @@ export default function App() {
 
             {/* Manage Table */}
             <Route path="/manage-table" element={<ManageTable />} />
+            <Route path="/manage-table/:id" element={<ManageTableDetail />} />
+
 
             {/* Tables */}
             <Route path="/basic-tables" element={<BasicTables />} />

@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+ import { useEffect, useState } from "react";
 import { useCreaetCustomerMutation, useGetAlltabledataMutation, useUpdatTableStatusMutation } from "../Slice/ApiSclice/AdminApi";
 import ComponentCard from "../components/common/ComponentCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from 'react-tooltip'
 import { Bounce, toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router";
 
 function ManageTable() {
-    const header = ["Reservation Status", "Table_No", "capacity", "Table Status", "Code", "Action"];
+    const navigate =useNavigate()
+    const header = ["Reservation Status", "Table_No", "capacity", "Table Status", "Code", "Action","Detail"];
     const [getAll] = useGetAlltabledataMutation();
     const [tableData, setTabelData] = useState([]);
     const rowPerPage = 10;
@@ -230,6 +232,11 @@ function ManageTable() {
                                             <td className="px-6 py-4 text-center">
                                                 <button disabled={isLoading} onClick={()=>updatestatus(data.table._id,data.table.status)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs">
                                                     {data.table.status === 'available' ? 'Occupy' : 'Clear'}
+                                                </button>
+                                            </td>
+                                            <td className="px-6 py-4 text-center">
+                                                <button  onClick={()=>navigate(`/manage-table/${data.table._id}`)} className="bg-white hover:bg-gray-300 text-black px-3 py-1 rounded text-xs">
+                                                    View
                                                 </button>
                                             </td>
                                         </tr>

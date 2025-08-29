@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { Table } from "../model/tabel";
 import { AuthRequest } from "../middleware/authMiddleware";
+import { Customer } from "../model/Customer";
+import mongoose from "mongoose";
 
 
 export const addTable = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -84,3 +86,80 @@ export const updateTable = asyncHandler(async (req: Request, res: Response) => {
     }
     
 })
+
+export const show_order = asyncHandler(async(req, res) => {
+    const { table_id } = req.body;
+    
+    if (!table_id) {
+        throw new Error("Table ID is required");
+    }
+
+    const result = await Customer.aggregate([
+        // Match customer by table_id
+        { $match: { table_id: new mongoose.Types.ObjectId(table_id) } },
+        { $sort: { time: -1 } },
+        { $limit: 1 },
+        
+        // Lookup customer orders
+        {
+            $lookup: {
+                from: 'customerorders',
+                localField: '_id',
+                foreignField: 'customer_id',
+                as: 'customerOrders'
+            }
+        },
+        
+        // Lookup table orders
+        {
+            $lookup: {
+                from: 'tableorders',
+                localField: 'customerOrders.tableOrder_id',
+                foreignField: '_id',
+                as: 'tableOrders'
+            }
+        },
+        
+        // Lookup order menu items
+        {
+            $lookup: {
+                from: 'ordermenus',
+                let: { orderIds: '$tableOrders._id' },
+                pipeline: [
+                    { $match: { $expr: { $in: ['$order_id', '$$orderIds'] } } },
+                    // Lookup menu details
+                    {
+                        $lookup: {
+                            from: 'menus',
+                            localField: 'menu_id',
+                            foreignField: '_id',
+                            as: 'menuDetails'
+                        }
+                    },
+                    // Lookup set details
+                    {
+                        $lookup: {
+                            from: 'sets',
+                            localField: 'set_id',
+                            foreignField: '_id',
+                            as: 'setDetails'
+                        }
+                    }
+                ],
+                as: 'orderItems'
+            }
+        }
+    ]);
+
+    if (!result.length) {
+         res.status(404).json({
+            success: false,
+            message: "No customer found for this table"
+        });
+    }
+
+    res.status(200).json({
+        success: true,
+        data: result[0]
+    });
+});

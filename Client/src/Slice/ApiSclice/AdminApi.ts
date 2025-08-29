@@ -217,9 +217,16 @@ export const AdminApiSlice = api.injectEndpoints({
                 method:"post",
                 body:data
             })
+        }),
+        showDetail:build.mutation({
+            query:(data)=>({
+                url:"/show-detail",
+                method:"post",
+                body:data
+            })
         })
-      
+        
     }),
     
 })
-export const{useDeleteSetMutation, useCreaetCustomerMutation,useGetAlltabledataMutation,useUpdatTableStatusMutation ,useGetDiscountMutation,useCreateDiscountMutation,useUpdateSetMutation,useGetReservationMutation ,useCreateMenuMutation,useGetAllSetMutation, useCrateSetMutation,useDeleteMenuMutation,useUpdateMenuMutation,useGetallMenuMutation ,useUpdateAdminMutation,useGetAllAdminMutation,useDeleteAdminMutation, useLoginMutation,useLogoutMutation,useUpdateSchemaMutation,useGetAllTableMutation,useAdminProfileMutation,useRegisterStaffMutation,useCreteateTableMutation,useDeleteTableMutation ,useUpdateTabelMutation}=AdminApiSlice
+export const{useDeleteSetMutation,useShowDetailMutation ,useCreaetCustomerMutation,useGetAlltabledataMutation,useUpdatTableStatusMutation ,useGetDiscountMutation,useCreateDiscountMutation,useUpdateSetMutation,useGetReservationMutation ,useCreateMenuMutation,useGetAllSetMutation, useCrateSetMutation,useDeleteMenuMutation,useUpdateMenuMutation,useGetallMenuMutation ,useUpdateAdminMutation,useGetAllAdminMutation,useDeleteAdminMutation, useLoginMutation,useLogoutMutation,useUpdateSchemaMutation,useGetAllTableMutation,useAdminProfileMutation,useRegisterStaffMutation,useCreteateTableMutation,useDeleteTableMutation ,useUpdateTabelMutation}=AdminApiSlice
