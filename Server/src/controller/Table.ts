@@ -4,6 +4,7 @@ import { Table } from "../model/tabel";
 import { AuthRequest } from "../middleware/authMiddleware";
 import { Customer } from "../model/Customer";
 import mongoose from "mongoose";
+import { TableOrder } from "../model/TableOrder";
 
 
 export const addTable = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -162,4 +163,95 @@ export const show_order = asyncHandler(async(req, res) => {
         success: true,
         data: result[0]
     });
+});
+
+export const showAllOrders = asyncHandler(async(req, res) => {
+    
+        const orders = await TableOrder.aggregate([
+            {
+                $lookup: {
+                    from: 'tables',
+                    localField: 'table_id',
+                    foreignField: '_id',
+                    as: 'table'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'ordermenus',
+                    localField: '_id',
+                    foreignField: 'order_id',
+                    as: 'orderItems',
+                    pipeline: [
+                        {
+                            $lookup: {
+                                from: 'menus',
+                                localField: 'menu_id',
+                                foreignField: '_id',
+                                as: 'menu'
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'sets',
+                                localField: 'set_id',
+                                foreignField: '_id',
+                                as: 'set'
+                            }
+                        },
+                        {
+                            $addFields: {
+                                menu: { $arrayElemAt: ['$menu', 0] },
+                                set: { $arrayElemAt: ['$set', 0] }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                $unwind: '$table'
+            },
+            {
+                $addFields: {
+                    itemCount: { $size: '$orderItems' }
+                }
+            },
+            {
+                $sort: { time: -1 }
+            },
+            {
+                $project: {
+                    time: 1,
+                    total: 1,
+                    status: 1,
+                    table: '$table',
+                    items: '$orderItems',
+                    itemCount: 1
+                }
+            }
+        ]);
+        
+        res.status(200).json({
+            success: true,
+            count: orders.length,
+            data: orders
+        });
+        
+    
+});
+
+export const conpleteOrder = asyncHandler(async(req, res) => {
+    const { _id } = req.body;
+    
+    if(!_id){
+        res.status(404).json({message:"There is no id!"})
+    }
+    const tableOrder = await TableOrder.findById(_id);
+    if (!tableOrder) {
+         res.status(404).json({ message: "Order not found" })
+    } else {
+        tableOrder.status = "completed";
+        await tableOrder.save();
+        res.status(200).json({ message: "Order marked as completed successfully", data: tableOrder });
+    }
 });

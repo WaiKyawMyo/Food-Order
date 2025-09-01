@@ -235,7 +235,7 @@ function ManageTable() {
                                                 </button>
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                <button  onClick={()=>navigate(`/manage-table/${data.table._id}`)} className="bg-white hover:bg-gray-300 text-black px-3 py-1 rounded text-xs">
+                                                <button disabled={data.table.status === 'available'? true:false} onClick={()=>navigate(`/manage-table/${data.table._id}`)} className={`  text-black px-3 py-1 rounded text-xs ${data.table.status === 'available'?"bg-gray-400":"bg-white hover:bg-gray-300"}`}>
                                                     View
                                                 </button>
                                             </td>

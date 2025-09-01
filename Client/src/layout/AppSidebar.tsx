@@ -40,6 +40,10 @@ const navItems: NavItem[] = [
     icon: <UserCircleIcon />,
     name: "Reservation",
     path: "/reservation",
+  },{
+    icon: <UserCircleIcon />,
+    name: "Order",
+    path: "/Order",
   }
 ];
 

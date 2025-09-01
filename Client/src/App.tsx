@@ -24,6 +24,7 @@ import Detail from "./pages/Reservation/Detail";
 import Discount from "./pages/Discount/Discount";
 import ManageTable from "./pages/ManageTable";
 import ManageTableDetail from "./pages/ManageTableDetail";
+import ManageAllOrders from "./pages/ShowOrder/showAllOrder";
 
 export function ClearLocalStorageOnClose() {
   useEffect(() => {
@@ -61,6 +62,9 @@ export default function App() {
 
              <Route path="/menu" element={<Menu/>} />
              <Route path="/set-menu" element={< Set_menu />} />
+
+              <Route path="/Order" element={< ManageAllOrders />} />
+             
 
             {/* Forms */}
             <Route path="/form-elements" element={<FormElements />} />

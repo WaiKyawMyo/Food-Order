@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { useShowDetailMutation } from "../Slice/ApiSclice/AdminApi"
+import { useCompleteOrderMutation, useShowDetailMutation } from "../Slice/ApiSclice/AdminApi"
 import { useParams } from 'react-router'
+import { toast } from 'react-toastify'
 
 
 function ManageTableDetail() {
   const [showDetail, { isLoading, error }] = useShowDetailMutation()
   const [orderData, setOrderData] = useState(null)
   const { id } = useParams()
+  const [ordercomplete]= useCompleteOrderMutation()
 
   useEffect(() => {
     if (id) {
@@ -49,6 +51,9 @@ function ManageTableDetail() {
       
     }, 0)
     
+  }
+  const hangleComplete = (id)=>{
+   
   }
 
   const getOverallStatus = () => {
@@ -224,7 +229,7 @@ function ManageTableDetail() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Amount</label>
-                  <p className="text-2xl font-bold text-green-600 dark:text-green-400">${calculateTotal().toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-green-600 dark:text-green-400">${(calculateTotal() * 1.1).toFixed(2)}</p>
                 </div>
               </div>
             </div>
