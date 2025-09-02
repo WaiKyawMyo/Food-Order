@@ -1,35 +1,35 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { useCompleteOrderMutation, useShowDetailMutation } from "../Slice/ApiSclice/AdminApi"
 import { useParams } from 'react-router'
 import { toast } from 'react-toastify'
-
 
 function ManageTableDetail() {
   const [showDetail, { isLoading, error }] = useShowDetailMutation()
   const [orderData, setOrderData] = useState(null)
   const { id } = useParams()
-  const [ordercomplete]= useCompleteOrderMutation()
+  const [ordercomplete] = useCompleteOrderMutation()
 
   useEffect(() => {
     if (id) {
       fetchOrderDetails()
     }
-    
   }, [id])
 
   const fetchOrderDetails = async () => {
     try {
       const result = await showDetail({ table_id: id }).unwrap()
+      console.log('Fetched order data:', result.data) // Add this for debugging
       setOrderData(result.data)
-      
     } catch (err) {
       console.error('Error fetching order details:', err)
+      toast.error('Failed to fetch order details')
     }
-    console.log(orderData)
   }
 
   const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
+    if (!status) return 'text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+    
+    switch (status.toLowerCase()) {
       case 'completed': 
         return 'text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/20 border-green-200 dark:border-green-800'
       case 'pending': 
@@ -44,22 +44,40 @@ function ManageTableDetail() {
   }
 
   const calculateTotal = () => {
-    if (!orderData?.orderItems) return 0
-    return orderData.orderItems.reduce((total, item) => {
-      const price = item.menuDetails?.[0]?.price || item.setDetails?.[0]?.price || 0
-      return total + (price * (item.quantity || 1))
-      
-    }, 0)
+    if (!orderData?.orderItems || !Array.isArray(orderData.orderItems)) return 0
     
+    return orderData.orderItems.reduce((total, item) => {
+      const price = item?.menuDetails?.[0]?.price || item?.setDetails?.[0]?.price || 0
+      const quantity = item?.quantity || 1
+      return total + (price * quantity)
+    }, 0)
   }
-  const hangleComplete = (id)=>{
-   
+
+  const getTableNumber = () => {
+    // Try to get table number from various possible sources
+    return orderData?.table_id?.table_No || 
+           orderData?.tableOrders?.[0]?.table_id?.table_No || 
+           orderData?.table_No || 
+           id || 
+           'Unknown'
+  }
+
+  const getOrderTime = () => {
+    if (!orderData?.tableOrders || orderData.tableOrders.length === 0) return 'Unknown'
+    
+    const lastOrder = orderData.tableOrders[orderData.tableOrders.length - 1]
+    return lastOrder?.time ? new Date(lastOrder.time).toLocaleString() : 'Unknown'
+  }
+
+  const hangleComplete = (orderId) => {
+    // Your complete order logic here
+    console.log('Completing order:', orderId)
   }
 
   const getOverallStatus = () => {
     if (!orderData?.orderItems?.length) return 'No Orders'
     
-    const statuses = orderData.orderItems.map(item => item.status?.toLowerCase() || 'pending')
+    const statuses = orderData.orderItems.map(item => item?.status?.toLowerCase() || 'pending')
     
     if (statuses.every(status => status === 'completed')) return 'Completed'
     if (statuses.some(status => status === 'cancelled')) return 'Cancelled'
@@ -85,7 +103,7 @@ function ManageTableDetail() {
           <div className="text-red-500 dark:text-red-400 text-6xl mb-4">⚠️</div>
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Error Loading Order</h3>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {error?.data?.message || 'Failed to load order details'}
+            {error?.data?.message || error?.message || 'Failed to load order details'}
           </p>
           <button 
             onClick={fetchOrderDetails}
@@ -112,102 +130,97 @@ function ManageTableDetail() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* New Modern Header Bar */}
+      {/* Header Bar */}
       <div className="bg-gradient-to-r from-slate-600 to-slate-700 dark:from-slate-700 dark:to-slate-800 text-white shadow-lg">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="flex items-center justify-between py-6">
-      {/* Left Section - Back Button & Title */}
-      <div className="flex items-center space-x-6">
-        <button 
-          onClick={() => window.history.back()}
-          className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors backdrop-blur-sm"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          <span>Back</span>
-        </button>
-        
-        <div>
-          <h1 className=" font-bold">Table #{}</h1>
-          <p className="text-slate-200 text-sm">Order Management</p>
-        </div>
-      </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-6">
+            {/* Left Section - Back Button & Title */}
+            <div className="flex items-center space-x-6">
+              <button 
+                onClick={() => window.history.back()}
+                className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors backdrop-blur-sm"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span>Back</span>
+              </button>
+              
+              <div>
+                <h1 className="text-2xl font-bold">Table #{}</h1>
+                <p className="text-slate-200 text-sm">Order Management</p>
+              </div>
+            </div>
 
-      {/* Center Section - Order Status */}
-      <div className="hidden md:flex items-center space-x-6">
-        <div className="text-center">
-          <div className="text-2xl font-bold">{orderData.orderItems?.length || 0}</div>
-          <div className="text-slate-300 text-sm">Items</div>
-        </div>
-        <div className="h-12 w-px bg-white/20"></div>
-        <div className="text-center">
-          <div className="text-2xl font-bold">${calculateTotal().toFixed(2)  }</div>
-          <div className="text-slate-300 text-sm">Total</div>
-        </div>
-        <div className="h-12 w-px bg-white/20"></div>
-        <div className="text-center">
-          <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-            getOverallStatus() === 'Completed' ? 'bg-green-500/20 text-green-200' :
-            getOverallStatus() === 'Preparing' ? 'bg-yellow-500/20 text-yellow-200' :
-            getOverallStatus() === 'Cancelled' ? 'bg-red-500/20 text-red-200' :
-            'bg-gray-500/20 text-gray-200'
-          }`}>
-            {getOverallStatus()}
+            {/* Center Section - Order Status */}
+            <div className="hidden md:flex items-center space-x-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold">{orderData?.orderItems?.length || 0}</div>
+                <div className="text-slate-300 text-sm">Items</div>
+              </div>
+              <div className="h-12 w-px bg-white/20"></div>
+              <div className="text-center">
+                <div className="text-2xl font-bold">${calculateTotal().toFixed(2)}</div>
+                <div className="text-slate-300 text-sm">Total</div>
+              </div>
+              <div className="h-12 w-px bg-white/20"></div>
+              <div className="text-center">
+                <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  getOverallStatus() === 'Completed' ? 'bg-green-500/20 text-green-200' :
+                  getOverallStatus() === 'Preparing' ? 'bg-yellow-500/20 text-yellow-200' :
+                  getOverallStatus() === 'Cancelled' ? 'bg-red-500/20 text-red-200' :
+                  'bg-gray-500/20 text-gray-200'
+                }`}>
+                  {getOverallStatus()}
+                </div>
+                <div className="text-slate-300 text-sm mt-1">Status</div>
+              </div>
+            </div>
+
+            {/* Right Section - Action Buttons */}
+            <div className="flex items-center space-x-3">
+              <button 
+                onClick={fetchOrderDetails}
+                className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors backdrop-blur-sm flex items-center space-x-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Refresh</span>
+              </button>
+              
+              
+            </div>
           </div>
-          <div className="text-slate-300 text-sm mt-1">Status</div>
-        </div>
-      </div>
 
-      {/* Right Section - Action Buttons */}
-      <div className="flex items-center space-x-3">
-        <button 
-          onClick={fetchOrderDetails}
-          className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors backdrop-blur-sm flex items-center space-x-2"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          <span>Refresh</span>
-        </button>
-        
-        <button className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors flex items-center space-x-2">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          <span>Complete Order</span>
-        </button>
-      </div>
-    </div>
-
-    {/* Mobile Stats Row */}
-    <div className="md:hidden pb-4">
-      <div className="flex justify-around items-center bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-        <div className="text-center">
-          <div className="font-bold">{orderData.orderItems?.length || 0}</div>
-          <div className="text-xs text-slate-300">Items</div>
-        </div>
-        <div className="text-center">
-          <div className="font-bold">${calculateTotal().toFixed(2)}</div>
-          <div className="text-xs text-slate-300">Total</div>
-        </div>
-        <div className="text-center">
-          <div className={`px-2 py-1 rounded text-xs font-medium ${
-            getOverallStatus() === 'Completed' ? 'bg-green-500/20 text-green-200' :
-            getOverallStatus() === 'Preparing' ? 'bg-yellow-500/20 text-yellow-200' :
-            getOverallStatus() === 'Cancelled' ? 'bg-red-500/20 text-red-200' :
-            'bg-gray-500/20 text-gray-200'
-          }`}>
-            {getOverallStatus()}
+          {/* Mobile Stats Row */}
+          <div className="md:hidden pb-4">
+            <div className="flex justify-around items-center bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+              <div className="text-center">
+                <div className="font-bold">{orderData?.orderItems?.length || 0}</div>
+                <div className="text-xs text-slate-300">Items</div>
+              </div>
+              <div className="text-center">
+                <div className="font-bold">${calculateTotal().toFixed(2)}</div>
+                <div className="text-xs text-slate-300">Total</div>
+              </div>
+              <div className="text-center">
+                <div className={`px-2 py-1 rounded text-xs font-medium ${
+                  getOverallStatus() === 'Completed' ? 'bg-green-500/20 text-green-200' :
+                  getOverallStatus() === 'Preparing' ? 'bg-yellow-500/20 text-yellow-200' :
+                  getOverallStatus() === 'Cancelled' ? 'bg-red-500/20 text-red-200' :
+                  'bg-gray-500/20 text-gray-200'
+                }`}>
+                  {getOverallStatus()}
+                </div>
+                <div className="text-xs text-slate-300 mt-1">Status</div>
+              </div>
+            </div>
           </div>
-          <div className="text-xs text-slate-300 mt-1">Status</div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
 
-      {/* Rest of your existing component content remains the same */}
+      {/* Rest of your component remains the same, but with safer property access */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
@@ -221,11 +234,11 @@ function ManageTableDetail() {
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Customer ID</label>
-                  <p className="text-gray-900 dark:text-gray-100 font-mono text-sm break-all">{orderData._id}</p>
+                  <p className="text-gray-900 dark:text-gray-100 font-mono text-sm break-all">{orderData?._id || 'N/A'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Order Time</label>
-                  <p className="text-gray-900 dark:text-gray-100">{new Date(orderData.tableOrders[orderData.tableOrders.length-1].time).toLocaleString()}</p>
+                  <p className="text-gray-900 dark:text-gray-100">{getOrderTime()}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Amount</label>
@@ -257,9 +270,6 @@ function ManageTableDetail() {
                 </div>
               </div>
             </div>
-
-            {/* Quick Actions */}
-            
           </div>
 
           {/* Order Items */}
@@ -273,7 +283,7 @@ function ManageTableDetail() {
                       Order Items
                     </h2>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      {orderData.orderItems?.length || 0} items ordered
+                      {orderData?.orderItems?.length || 0} items ordered
                     </p>
                   </div>
                   <div className="text-right">
@@ -286,15 +296,15 @@ function ManageTableDetail() {
               </div>
               
               <div className="divide-y dark:divide-gray-700">
-                {orderData.orderItems?.map((item, index) => {
-                  const menuItem = item.menuDetails?.[0] || item.setDetails?.[0]
+                {orderData?.orderItems?.map((item, index) => {
+                  const menuItem = item?.menuDetails?.[0] || item?.setDetails?.[0]
                   return (
                     <div key={index} className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <div className="flex items-start space-x-4">
                         <div className="flex-shrink-0">
                           <img 
                             src={menuItem?.image || 'https://via.placeholder.com/80x80?text=No+Image'} 
-                            alt={menuItem?.name}
+                            alt={menuItem?.name || 'Menu item'}
                             className="w-20 h-20 rounded-lg object-cover border dark:border-gray-600"
                             onError={(e) => {
                               e.target.src = 'https://via.placeholder.com/80x80?text=No+Image'
@@ -313,10 +323,10 @@ function ManageTableDetail() {
                               </p>
                               <div className="flex items-center mt-2 space-x-4">
                                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                                  Qty: <span className="font-medium text-gray-900 dark:text-gray-100">{item.quantity || 1}</span>
+                                  Qty: <span className="font-medium text-gray-900 dark:text-gray-100">{item?.quantity || 1}</span>
                                 </span>
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(item.status)}`}>
-                                  {item.status || 'Pending'}
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(item?.status)}`}>
+                                  {item?.status || 'Pending'}
                                 </span>
                               </div>
                             </div>
@@ -325,15 +335,15 @@ function ManageTableDetail() {
                               <div className="text-lg font-semibold text-gray-900 dark:text-white">
                                 ${menuItem?.price?.toFixed(2) || '0.00'}
                               </div>
-                              {(item.quantity || 1) > 1 && (
+                              {(item?.quantity || 1) > 1 && (
                                 <div className="text-sm text-gray-600 dark:text-gray-400">
-                                  ${((menuItem?.price || 0) * (item.quantity || 1)).toFixed(2)} total
+                                  ${((menuItem?.price || 0) * (item?.quantity || 1)).toFixed(2)} total
                                 </div>
                               )}
                             </div>
                           </div>
                           
-                          {item.notes && (
+                          {item?.notes && (
                             <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
                               <p className="text-sm text-yellow-800 dark:text-yellow-300">
                                 <span className="font-medium">Special Instructions:</span> {item.notes}
@@ -346,7 +356,7 @@ function ManageTableDetail() {
                   )
                 })}
                 
-                {!orderData.orderItems?.length && (
+                {(!orderData?.orderItems || orderData.orderItems.length === 0) && (
                   <div className="p-12 text-center">
                     <div className="text-gray-400 dark:text-gray-500 text-6xl mb-4">🕐</div>
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Items Ordered</h3>
@@ -355,9 +365,6 @@ function ManageTableDetail() {
                 )}
               </div>
             </div>
-
-            {/* Order Statistics */}
-            
           </div>
         </div>
       </div>

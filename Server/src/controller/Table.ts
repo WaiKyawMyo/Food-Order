@@ -58,7 +58,7 @@ export const deletTable = asyncHandler(async (req: Request, res: Response) => {
 })
 
 export const updateTable = asyncHandler(async (req: Request, res: Response) => {
-    const { _id, table_No, capacity,status } = req.body
+    const { _id, table_No, capacity } = req.body
     const exitTable = await Table.findById({ _id })
     const TableNoCheck = await Table.findOne({ table_No })
     if (!_id) {
@@ -72,7 +72,7 @@ export const updateTable = asyncHandler(async (req: Request, res: Response) => {
 
     exitTable.table_No = table_No,
         exitTable.capacity = capacity
-    exitTable.status = status
+    
 
     if (TableNoCheck) {
         if (TableNoCheck._id == _id) {
@@ -254,4 +254,39 @@ export const conpleteOrder = asyncHandler(async(req, res) => {
         await tableOrder.save();
         res.status(200).json({ message: "Order marked as completed successfully", data: tableOrder });
     }
+});
+
+export const getTablesNeedingHelp = asyncHandler(async (req, res) => {
+    const tablesNeedingHelp = await Table.find({ 
+        help: true 
+    }).sort({ updatedAt: -1 }); // Most recent help requests first
+    
+    res.status(200).json({
+        success: true,
+        count: tablesNeedingHelp.length,
+        data: tablesNeedingHelp
+    });
+});
+
+export const resolveTableHelp = asyncHandler(async (req, res) => {
+    const { tableId } = req.params;
+    
+    const table = await Table.findByIdAndUpdate(
+        tableId,
+        { help: false },
+       
+    );
+    
+    if (!table) {
+         res.status(404).json({ 
+            success: false,
+            message: "Table not found" 
+        });
+    }
+    
+    res.status(200).json({
+        success: true,
+        message: "Help request resolved successfully",
+        data: table
+    });
 });

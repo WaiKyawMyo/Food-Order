@@ -63,7 +63,7 @@ function Set_menu() {
         if (res.error) {
           toast.error(res.error.data.message);
         } else {
-          toast.success(res.data.message);
+          toast.success("Success Register");
           reset();
           setSelectedDesigns([]);
           setDisplayedDesigns([]);
@@ -138,7 +138,11 @@ function Set_menu() {
   }, [getAll]);
   return (
     <>
-      <ToastContainer
+      
+      <PageBreadcrumb pageTitle="Create Set" />
+      
+      <ComponentCard title="Create Set">
+        <ToastContainer
         className={"mt-14"}
         position="top-right"
         autoClose={2000}
@@ -152,8 +156,6 @@ function Set_menu() {
         theme="light"
         transition={Bounce}
       />
-      <PageBreadcrumb pageTitle="Create Set" />
-      <ComponentCard title="Create Set">
         {!updateMode ? (
           <form
             onSubmit={handleSubmit(submit)}

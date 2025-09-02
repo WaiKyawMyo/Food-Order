@@ -61,7 +61,7 @@ function UpdateSet({ editData, back, onSuccess }: Props) {
       if (res.error) {
         toast.error(res.error.data.message);
       } else {
-        toast.success(res.data.message);
+        toast.success("Success Update",{});
         reset();
         setDisplayedDesigns([]);
         setSelectedDesigns([]);

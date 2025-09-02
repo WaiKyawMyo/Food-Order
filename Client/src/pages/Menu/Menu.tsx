@@ -107,6 +107,8 @@ function Menu() {
 
   return (
     <>
+      
+      <PageBreadcrumb pageTitle="Create Menu" />
       <ToastContainer
         className={"mt-14"}
         position="top-right"
@@ -121,8 +123,8 @@ function Menu() {
         theme="light"
         transition={Bounce}
       />
-      <PageBreadcrumb pageTitle="Create Menu" />
       <ComponentCard title="Create Menu">
+        
         {!update?<form
           onSubmit={handleSubmit(submit)}
           className="max-w-md mx-auto text-gray-500 dark:text-white p-6"

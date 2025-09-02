@@ -238,9 +238,20 @@ export const AdminApiSlice = api.injectEndpoints({
                 method:"put",
                 body:data
             })
-        })
+        }),
+           getTablesNeedingHelp: build.query({
+            query: () => '/help',
+            // Remove pollingInterval from here - it goes in the component
+        }),
+            resolveTableHelp: build.mutation({
+    query: (tableId) => ({
+        url: `/help/${tableId}`,
+        method: 'PATCH',
+    })
+})
+
         
     }),
     
 })
-export const{useDeleteSetMutation, useCompleteOrderMutation,useShowDetailMutation,useShowOrderMutation ,useCreaetCustomerMutation,useGetAlltabledataMutation,useUpdatTableStatusMutation ,useGetDiscountMutation,useCreateDiscountMutation,useUpdateSetMutation,useGetReservationMutation ,useCreateMenuMutation,useGetAllSetMutation, useCrateSetMutation,useDeleteMenuMutation,useUpdateMenuMutation,useGetallMenuMutation ,useUpdateAdminMutation,useGetAllAdminMutation,useDeleteAdminMutation, useLoginMutation,useLogoutMutation,useUpdateSchemaMutation,useGetAllTableMutation,useAdminProfileMutation,useRegisterStaffMutation,useCreteateTableMutation,useDeleteTableMutation ,useUpdateTabelMutation}=AdminApiSlice
+export const{useDeleteSetMutation,useGetTablesNeedingHelpQuery, useResolveTableHelpMutation,useCompleteOrderMutation,useShowDetailMutation,useShowOrderMutation ,useCreaetCustomerMutation,useGetAlltabledataMutation,useUpdatTableStatusMutation ,useGetDiscountMutation,useCreateDiscountMutation,useUpdateSetMutation,useGetReservationMutation ,useCreateMenuMutation,useGetAllSetMutation, useCrateSetMutation,useDeleteMenuMutation,useUpdateMenuMutation,useGetallMenuMutation ,useUpdateAdminMutation,useGetAllAdminMutation,useDeleteAdminMutation, useLoginMutation,useLogoutMutation,useUpdateSchemaMutation,useGetAllTableMutation,useAdminProfileMutation,useRegisterStaffMutation,useCreteateTableMutation,useDeleteTableMutation ,useUpdateTabelMutation}=AdminApiSlice

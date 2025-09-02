@@ -69,12 +69,14 @@ function UpdateForm({ editData, setUpdate }: prop) {
       }
 
       const res = await updateData(formData);
+
       console.log(res);
       if (res.error) {
         toast.error(res.error.data.message);
       }
-      toast.success(res.data.message);
-      setUpdate(false);
+     toast.success(res.data.message, {
+      onClose: () => setUpdate(false)
+    });
     } catch (err: any) {
       toast.error(err.data.message);
     }
